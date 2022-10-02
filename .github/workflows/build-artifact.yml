@@ -1,0 +1,69 @@
+name: Build Artifact
+on:
+  push:
+    branches: [master]
+    paths-ignore:
+      - "**.md"
+      - ".github/**"
+  pull_request:
+    branches: [master]
+  workflow_call:
+    outputs:
+      version:
+        description: "Version builded"
+        value: ${{ jobs.build.outputs.version }}
+jobs:
+  build:
+    name: Build
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+    runs-on: windows-latest
+    env:
+      DOTNET_NOLOGO: true
+      SolutionName: DynmapImageExport.sln
+      Configuration: ${{ matrix.configuration }}
+    outputs:
+      version: ${{steps.version.outputs.version}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+          include-prerelease: true
+
+      - name: Set VERSION
+        id: version
+        run: .\.github\scripts\version.ps1
+
+      - name: Build solution
+        run: dotnet build -c $env:Configuration
+
+      - name: Build artifact
+        if: matrix.configuration == 'Release'
+        run: |
+          dotnet publish -c Release -p:PublishProfile=win-x64 /property:Version=$env:VERSION
+          dotnet publish -c Release -p:PublishProfile=linux-x64 /property:Version=$env:VERSION
+
+      - name: Upload artifact(win)
+        if: matrix.configuration == 'Release'
+        uses: actions/upload-artifact@v3
+        with:
+          name: DynmapImageExport(win)
+          path: |
+            DynmapImageExport\bin\Release\net6.0\publish\win-x64\DynmapImageExport.exe
+          if-no-files-found: error
+
+      - name: Upload artifact(linux)
+        if: matrix.configuration == 'Release'
+        uses: actions/upload-artifact@v3
+        with:
+          name: DynmapImageExport(linux)
+          path: |
+            DynmapImageExport\bin\Release\net6.0\publish\linux-x64\DynmapImageExport
+          if-no-files-found: error

@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<DebugType>embedded</DebugType>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<ApplicationIcon>icon.ico</ApplicationIcon>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/Virenbar/DynmapImageExport</RepositoryUrl>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<DeleteExistingFiles>true</DeleteExistingFiles>
+		<PublishSingleFile>true</PublishSingleFile>
+		<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+		<PublishTrimmed>true</PublishTrimmed>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Include="I.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
+		<PackageReference Include="Spectre.Console" Version="0.45.0" />
+		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+		<PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Dynmap\Dynmap.csproj" />
+	</ItemGroup>
+</Project>
