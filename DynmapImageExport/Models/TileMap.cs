@@ -1,4 +1,4 @@
-﻿namespace DynmapTools.Models
+﻿namespace DynmapImageExport.Models
 {
     internal class TileMap : Dictionary<(int DX, int DY), Tile>
     {

@@ -44,8 +44,6 @@ namespace Dynmap
                 .ToDictionary(X => (X.W.Name, X.M.Name), X => X.M);
         }
 
-        public string Tiles(string world) => URLs?.Tiles.Replace("{world}", world);
-
         private static string ApplyTimestamp(string str) => str.Replace("{timestamp}", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString());
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace DynmapTools.Models
+﻿namespace DynmapImageExport.Models
 {
     /// <summary>
     /// Minecraft ingame point

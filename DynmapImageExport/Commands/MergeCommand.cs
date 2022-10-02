@@ -1,14 +1,12 @@
-﻿using Dynmap;
-using DynmapTools.Models;
+﻿using DynmapImageExport.Models;
 using Spectre.Console;
-using System;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
-using System.IO;
 using System.Text.RegularExpressions;
-using Padding = DynmapTools.Models.Padding;
+using static DynmapImageExport.Commands.Common;
+using Padding = DynmapImageExport.Models.Padding;
 
-namespace DynmapTools.Commands
+namespace DynmapImageExport.Commands
 {
     internal class MergeCommand : Command
     {
@@ -30,10 +28,8 @@ namespace DynmapTools.Commands
         {
             try
             {
-                var D = new DynMap(URL);
-                await AnsiConsole.Status()
-                    .Spinner(Spinner.Known.Dots)
-                    .Start("[yellow]Getting map list...[/]", async ctx => { await D.RefreshConfig(); });
+                var D = await GetDynmap(URL);
+
                 if (!D.Worlds.ContainsKey(world)) { throw new ArgumentException($"Invalid world name: {world}", nameof(world)); }
                 if (!D.Maps.ContainsKey((world, map))) { throw new ArgumentException($"Invalid map name: {map}", nameof(map)); }
                 //
@@ -43,12 +39,12 @@ namespace DynmapTools.Commands
                 //
                 var Center = Point.Parse(center);
                 var Range = Padding.Parse(range);
-                var Zoom = zoom ?? Math.Log(Map.Scale, 2);
+                var Zoom = zoom ?? (int)Math.Log(Map.Scale, 2);
                 AnsiConsole.MarkupLine($"Center point: {Center}");
                 AnsiConsole.MarkupLine($"Range size: {Range.Width}x{Range.Height}");
 
-                var CenterTile = Source.TileAtPoint(Center, 0);
-                var Tiles = CenterTile.CreateTileRange(Range);
+                var CenterTile = Source.TileAtPoint(Center, Zoom);
+                var Tiles = CenterTile.CreateTileMap(Range);
                 AnsiConsole.MarkupLine($"Central tile: {CenterTile}");
                 AnsiConsole.MarkupLine($"Tiles to download: {Tiles.Count}");
                 // Download
@@ -57,16 +53,16 @@ namespace DynmapTools.Commands
                 // Merge
                 var path = output ?? $"{D.Config.Title}-{DateTime.Now:yyyy-MM-dd HH.mm.ss}";
                 Merge(Images, path);
-                //AnsiConsole.MarkupInterpolated($"[green]{URL} {world} {range} {map} {zoom}[/]");
                 return 0;
             }
             catch (ArgumentException E)
             {
-                //AnsiConsole.MarkupLine($"[red]{E.Message.EscapeMarkup()}[/]");
                 AnsiConsole.WriteException(E, ExceptionFormats.ShortenPaths);
                 return 1;
             }
         }
+
+        #region Tasks
 
         private static async Task<ImageMap> Download(TileMap range)
         {
@@ -75,31 +71,35 @@ namespace DynmapTools.Commands
                 .StartAsync(async ctx =>
                 {
                     var T = ctx.AddTask($"Downloading tiles: 0/{range.Count}", true, range.Count);
-                    var PP = new Progress<string>(str =>
-                    {
-                        T.Increment(1);
-                        T.Description = Regex.Replace(T.Description, "\\d+/\\d+", $"{T.Value}/{T.MaxValue}");
-                    });
+                    var PP = GetProgress(T);
                     return await TD.Download(PP);
                 });
+        }
+
+        private static IProgress<string> GetProgress(ProgressTask task)
+        {
+            var PP = new Progress<string>(str =>
+            {
+                task.Increment(1);
+                task.Description = Regex.Replace(task.Description, "\\d+/\\d+", $"{task.Value}/{task.MaxValue}");
+            });
+            return PP;
         }
 
         private static void Merge(ImageMap images, string path)
         {
             path = path.Replace(".png", "", StringComparison.InvariantCultureIgnoreCase) + ".png";
-            var M = new Merger(images, path);
+            var M = new TileMerger(images, path);
 
             AnsiConsole.Progress()
                 .Start(ctx =>
                 {
                     var T = ctx.AddTask($"Merging images: 0/{images.Count}", true, images.Count);
-                    var PP = new Progress<string>(str =>
-                    {
-                        T.Increment(1);
-                        T.Description = Regex.Replace(T.Description, "\\d+/\\d+", $"{T.Value}/{T.MaxValue}");
-                    });
+                    var PP = GetProgress(T);
                     M.Merge(PP);
                 });
         }
+
+        #endregion Tasks
     }
 }

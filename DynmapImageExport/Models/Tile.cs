@@ -1,4 +1,4 @@
-﻿namespace DynmapTools.Models
+﻿namespace DynmapImageExport.Models
 {
     internal class Tile
     {
@@ -10,29 +10,20 @@
             Zoom = zoom;
         }
 
-        public string TilePath() => Source.TilePath(X, Y, Zoom);
-
-        public string TileURL() => Source.TileURL(X, Y, Zoom);
-
         public TileSource Source { get; }
         public int X { get; }
         public int Y { get; }
         public int Zoom { get; }
 
-        public override string ToString()
-        {
-            return $"{{X={X},Y={Y}}}";
-        }
-
-        public TileMap CreateTileRange(Padding range)
+        public TileMap CreateTileMap(Padding padding)
         {
             var Scale = 1 << Zoom;
 
             var Tiles = new TileMap(Source);
 
-            for (int dy = -range.Top; dy <= range.Bottom; dy++)
+            for (int dy = -padding.Top; dy <= padding.Bottom; dy++)
             {
-                for (int dx = -range.Left; dx <= range.Right; dx++)
+                for (int dx = -padding.Left; dx <= padding.Right; dx++)
                 {
                     if (dx == 0 && dy == 0)
                     {
@@ -47,5 +38,11 @@
             }
             return Tiles;
         }
+
+        public string TilePath() => Source.TilePath(X, Y, Zoom);
+
+        public string TileURL() => Source.TileURL(X, Y, Zoom);
+
+        public override string ToString() => $"{{X={X},Y={Y}}}";
     }
 }

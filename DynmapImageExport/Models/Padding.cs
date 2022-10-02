@@ -1,4 +1,4 @@
-﻿namespace DynmapTools.Models
+﻿namespace DynmapImageExport.Models
 {
     internal record Padding(int Top, int Right, int Bottom, int Left)
     {

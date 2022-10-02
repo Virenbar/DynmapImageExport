@@ -1,7 +1,7 @@
-﻿using DynmapTools.Options;
+﻿using DynmapImageExport.Options;
 using System.CommandLine.Builder;
 
-namespace DynmapTools
+namespace DynmapImageExport
 {
     public static class Extensions
     {

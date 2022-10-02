@@ -1,9 +1,9 @@
-﻿using Dynmap;
-using Spectre.Console;
+﻿using Spectre.Console;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
+using static DynmapImageExport.Commands.Common;
 
-namespace DynmapTools.Commands
+namespace DynmapImageExport.Commands
 {
     internal class ListCommand : Command
     {
@@ -17,17 +17,9 @@ namespace DynmapTools.Commands
 
         private async Task<int> HandleCommand(string URL)
         {
-            var D = new DynMap(URL);
-            await AnsiConsole.Status()
-                .Spinner(Spinner.Known.Dots)
-                .Start("[yellow]Getting map list...[/]", async ctx => { await D.RefreshConfig(); });
-
+            var D = await GetDynmap(URL);
             var Worlds = D.Config.Worlds;
-            var WNMax = Worlds.Max(W => W.Name.Length);
             var MNMax = Worlds.SelectMany(W => W.Maps).Max(M => M.Name.Length);
-
-            var WTMax = Worlds.Max(W => W.Title.Length);
-            var MTMax = Worlds.SelectMany(W => W.Maps).Max(M => M.Title.Length);
 
             var Root = new Tree("Available worlds");
             foreach (var W in Worlds)

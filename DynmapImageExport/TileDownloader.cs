@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Net;
+using DynmapImageExport.Models;
 
-namespace DynmapTools.Models
+namespace DynmapImageExport
 {
     internal class TileDownloader : IDisposable
     {
@@ -30,16 +31,7 @@ namespace DynmapTools.Models
                 IP.Report("");
             });
             await Task.WhenAll(T);
-            /*
-            Parallel.ForEachAsync(Range,new ParallelOptions(), (KV) =>
-            {
-                var (K, V) = KV;
-                var (B, Path) = TryDownloadTile(V).Result;
-                if (B) { Files.TryAdd(K, Path); }
-                IP.Report("");
-            });
-            //*/
-            /*
+            /* Old
             Range.AsParallel()
                  .WithDegreeOfParallelism(4)
                  .ForAll((KV) =>
@@ -51,20 +43,8 @@ namespace DynmapTools.Models
                  }
               );
             //*/
-            /*
-            Range.AsParallel()
-                 .WithDegreeOfParallelism(4)
-                 .ForAll(async (KV) =>
-                 {
-                     var (K, V) = KV;
-                     var (B, Path) = await TryDownloadTile(V);
-                     if (B) { Files.TryAdd(K, Path); }
-                     IP.Report("");
-                 }
-              );
-            //*/
 
-            /*
+            /* Simple
             foreach (var (K, V) in Range)
             {
                 var (B, Path) = await TryDownloadTile(V);

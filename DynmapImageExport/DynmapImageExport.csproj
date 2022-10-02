@@ -18,12 +18,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Include="I.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
 		<PackageReference Include="Spectre.Console" Version="0.45.0" />
