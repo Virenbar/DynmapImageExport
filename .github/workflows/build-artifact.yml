@@ -41,8 +41,18 @@ jobs:
         id: version
         run: .\.github\scripts\version.ps1
 
+      - name: Restore cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
       - name: Build solution
-        run: dotnet build -c $env:Configuration
+        run: |
+          dotnet restore --locked-mode
+          dotnet build -c $env:Configuration
 
       - name: Build artifact
         if: matrix.configuration == 'Release'

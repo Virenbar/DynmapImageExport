@@ -4,6 +4,10 @@ using Spectre.Console;
 using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
+using System.Text;
+
+Console.OutputEncoding = Encoding.UTF8;
+Console.InputEncoding = Encoding.UTF8;
 
 var RootCommand = new RootCommand("Dynmap Image Export") {
     new ListCommand(),
@@ -20,9 +24,12 @@ var Parser = new CommandLineBuilder(RootCommand)
 
 #if DEBUG
 Parser.Invoke("ls https://map.minecrafting.ru");
-Parser.Invoke("i https://map.minecrafting.ru/ world flat -v");
-Parser.Invoke("m https://map.minecrafting.ru/ world flat [-70,64,-70] [10,10] 2 -v");
-Parser.Invoke("m https://map.minecrafting.ru/ world se_view [8057,138,4492] [2,2]");
+AnsiConsole.WriteLine("<==========>");
+Parser.Invoke("i https://map.minecrafting.ru/ world flat");
+AnsiConsole.WriteLine("<==========>");
+Parser.Invoke("m https://map.minecrafting.ru/ world flat [0,100,0] [5,6,5,5] 2");
+AnsiConsole.WriteLine("<==========>");
+Parser.Invoke("m https://map.minecrafting.ru/ world se_view [0,100,0] [5,11,5,10]");
 
 //Parser.Invoke("m https://map.minecrafting.ru/ world flat [2,2,2] [2,2]");
 //https://ebs.virenbar.ru/dynmap/
@@ -39,6 +46,5 @@ else
         Input = Input.Replace("DynmapImageExport", "");
         AnsiConsole.WriteLine();
         Parser.Invoke(Input);
-        AnsiConsole.WriteLine();
     }
 }

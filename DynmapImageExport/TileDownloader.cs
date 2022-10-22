@@ -31,27 +31,6 @@ namespace DynmapImageExport
                 IP.Report("");
             });
             await Task.WhenAll(T);
-            /* Old
-            Range.AsParallel()
-                 .WithDegreeOfParallelism(4)
-                 .ForAll((KV) =>
-                 {
-                     var (K, V) = KV;
-                     var (B, Path) = TryDownloadTile(V).Result;
-                     if (B) { Files.TryAdd(K, Path); }
-                     IP.Report("");
-                 }
-              );
-            //*/
-
-            /* Simple
-            foreach (var (K, V) in Range)
-            {
-                var (B, Path) = await TryDownloadTile(V);
-                if (B) { Files.TryAdd(K, Path); }
-                IP.Report("");
-            }
-            //*/
 
             return Files;
         }

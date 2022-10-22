@@ -17,7 +17,7 @@ namespace DynmapImageExport.Commands
             AddArgument(new Argument<string>("world", "World name"));
             AddArgument(new Argument<string>("map", "Map name"));
             AddArgument(new Argument<string>("center", () => "[0,64,0]", "Center of image [x,y,z]"));
-            AddArgument(new Argument<string>("range", "Range of image in tiles [all]|[vert,horz]|[top,left,bottom,right]"));
+            AddArgument(new Argument<string>("range", () => "[2]", "Range of image in tiles [all]|[vert,horz]|[top,right,bottom,left]"));
             AddArgument(new Argument<int>("zoom", () => 0, "Zoom"));
             AddOption(new Option<string>(new[] { "--output", "-o" }, "Output path"));
 
@@ -28,6 +28,7 @@ namespace DynmapImageExport.Commands
         {
             try
             {
+                AnsiConsole.MarkupLine($"[yellow]Merging of: {URL} - {world} - {map}[/]");
                 var D = await GetDynmap(URL);
 
                 if (!D.Worlds.ContainsKey(world)) { throw new ArgumentException($"Invalid world name: {world}", nameof(world)); }
@@ -40,19 +41,21 @@ namespace DynmapImageExport.Commands
                 var Center = Point.Parse(center);
                 var Range = Padding.Parse(range);
                 var Zoom = zoom ?? (int)Math.Log(Map.Scale, 2);
-                AnsiConsole.MarkupLine($"Center point: {Center}");
-                AnsiConsole.MarkupLine($"Range size: {Range.Width}x{Range.Height}");
 
                 var CenterTile = Source.TileAtPoint(Center, Zoom);
                 var Tiles = CenterTile.CreateTileMap(Range);
+
+                AnsiConsole.MarkupLine($"Center point: {Center}");
                 AnsiConsole.MarkupLine($"Central tile: {CenterTile}");
+                AnsiConsole.MarkupLine($"Range size: {Range.Height}x{Range.Width}");
                 AnsiConsole.MarkupLine($"Tiles to download: {Tiles.Count}");
                 // Download
                 var Images = await Download(Tiles);
                 AnsiConsole.MarkupLine($"Tiles downloaded: {Images.Count}");
                 // Merge
-                var path = output ?? $"{D.Config.Title}-{DateTime.Now:yyyy-MM-dd HH.mm.ss}";
-                Merge(Images, path);
+                var path = output ?? $"{D.Config.Title} ({world}-{map}-{center}-{range}-{zoom})";
+                var image = Merge(Images, path);
+                AnsiConsole.MarkupLineInterpolated($"[yellow]Merged image saved to: {image.FullName}[/]");
                 return 0;
             }
             catch (ArgumentException E)
@@ -86,7 +89,7 @@ namespace DynmapImageExport.Commands
             return PP;
         }
 
-        private static void Merge(ImageMap images, string path)
+        private static FileInfo Merge(ImageMap images, string path)
         {
             path = path.Replace(".png", "", StringComparison.InvariantCultureIgnoreCase) + ".png";
             var M = new TileMerger(images, path);
@@ -98,6 +101,7 @@ namespace DynmapImageExport.Commands
                     var PP = GetProgress(T);
                     M.Merge(PP);
                 });
+            return new FileInfo(path);
         }
 
         #endregion Tasks

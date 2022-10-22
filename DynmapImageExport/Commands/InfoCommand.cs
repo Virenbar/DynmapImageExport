@@ -30,6 +30,7 @@ namespace DynmapImageExport.Commands
 
         private async Task<int> HandleCommand(string URL, string world, string map)
         {
+            AnsiConsole.MarkupLine($"[yellow]Info for: {URL} - {world} - {map}[/]");
             var D = await GetDynmap(URL);
 
             if (!D.Worlds.ContainsKey(world)) { throw new ArgumentException($"Invalid world name: {world}", nameof(world)); }
@@ -42,13 +43,12 @@ namespace DynmapImageExport.Commands
 
             AnsiConsole.WriteLine($"World: {World.Name} - {World.Title}");
             AnsiConsole.WriteLine($"Map: {Map.Name} - {Map.Title}");
-            AnsiConsole.MarkupLine($"[white]Perspective: {Map.Perspective}[/]");
-            AnsiConsole.MarkupLine($"[white]PPB: {Scale}[/]");
+            AnsiConsole.MarkupLine($"[white]Perspective: {Map.Perspective} PPB: {Scale}[/]");
             var Zoom = new Tree($"[white]Zoom levels[/]");
             for (int zoom = 0; zoom <= MaxOut; zoom++)
             {
                 var S = Scale / Math.Pow(2, zoom);
-                Zoom.AddNode($"[yellow]{zoom} - {S.ToScale()}[/]");
+                Zoom.AddNode($"[yellow]{zoom}[/][white] - {S.ToScale()}[/]");
             }
             AnsiConsole.Write(Zoom);
 
