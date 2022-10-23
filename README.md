@@ -72,12 +72,16 @@ Options:
 
 ### Flat map
 
-`.\DynmapImageExport m https://map.minecrafting.ru/ world flat [0,100,0] [5,6,5,5] 2`  
+```console
+.\DynmapImageExport m https://map.minecrafting.ru/ world flat [0,100,0] [5,6,5,5] 2
+```
 
 ![flat](/assets/images/Minecrafting.ru-flat.png)
 
 ### Isometric map
 
-`.\DynmapImageExport m https://map.minecrafting.ru/ world se_view [0,100,0] [5,11,5,10]`  
+```console
+.\DynmapImageExport m https://map.minecrafting.ru/ world se_view [0,100,0] [5,11,5,10]
+```
 
 ![se_view](/assets/images/Minecrafting.ru-se_view.png)
