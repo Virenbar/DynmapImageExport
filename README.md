@@ -2,10 +2,12 @@
 
 Tool to download and merge Dynmap tiles into one image
 
+![terminal](/assets/images/terminal.gif)
+
 ## Usage
 
 ```text
-DynmapImageExport [command] [options]
+.\DynmapImageExport [command] [options]
 
 Commands:
 list, ls  Show available worlds and maps
@@ -31,7 +33,7 @@ Use `[command] -h` to see help for command
 Show available worlds and maps
 
 ```text
-DynmapImageExport list <url>
+.\DynmapImageExport list <url>
 
 <url>  Dynmap URL
 ```
@@ -41,7 +43,7 @@ DynmapImageExport list <url>
 Show info about map
 
 ```text
-DynmapImageExport info <url> <world> <map>
+.\DynmapImageExport info <url> <world> <map>
 
 <url>    Dynmap URL
 <world>  World name
@@ -53,7 +55,7 @@ DynmapImageExport info <url> <world> <map>
 Merge dynmap map to image
 
 ```text
-DynmapImageExport merge <url> <world> <map> [<center> [<range> [<zoom>]]] [options]
+.\DynmapImageExport merge <url> <world> <map> [<center> [<range> [<zoom>]]] [options]
 
 <url>     Dynmap URL
 <world>   World name
@@ -70,12 +72,12 @@ Options:
 
 ### Flat map
 
-`m https://map.minecrafting.ru/ world flat [0,100,0] [5,6,5,5] 2`  
+`.\DynmapImageExport m https://map.minecrafting.ru/ world flat [0,100,0] [5,6,5,5] 2`  
 
-![alt](/assets/images/Minecrafting.ru-flat.png)
+![flat](/assets/images/Minecrafting.ru-flat.png)
 
 ### Isometric map
 
-`m https://map.minecrafting.ru/ world se_view [0,100,0] [5,11,5,10]`  
+`.\DynmapImageExport m https://map.minecrafting.ru/ world se_view [0,100,0] [5,11,5,10]`  
 
-![alt](/assets/images/Minecrafting.ru-se_view.png)
+![se_view](/assets/images/Minecrafting.ru-se_view.png)
