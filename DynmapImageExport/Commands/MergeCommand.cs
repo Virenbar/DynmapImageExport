@@ -17,14 +17,15 @@ namespace DynmapImageExport.Commands
             AddArgument(new Argument<string>("world", "World name"));
             AddArgument(new Argument<string>("map", "Map name"));
             AddArgument(new Argument<string>("center", () => "[0,64,0]", "Center of image [x,y,z]"));
-            AddArgument(new Argument<string>("range", () => "[2]", "Range of image in tiles [all]|[vert,horz]|[top,right,bottom,left]"));
+            AddArgument(new Arguments.Range());
+            // AddArgument(new Argument<string>("range", () => "[2]", "Range of image in tiles [all]|[vert,horz]|[top,right,bottom,left]"));
             AddArgument(new Argument<int>("zoom", () => 0, "Zoom"));
             AddOption(new Option<string>(new[] { "--output", "-o" }, "Output path"));
 
             Handler = CommandHandler.Create(HandleCommand);
         }
 
-        private static async Task<int> HandleCommand(string URL, string world, string map, string center, string range, int? zoom, string output)
+        private static async Task<int> HandleCommand(string URL, string world, string map, string center, Padding range, int? zoom, string output)
         {
             try
             {
@@ -39,7 +40,7 @@ namespace DynmapImageExport.Commands
                 var Source = new TileSource(D, World, Map);
                 //
                 var Center = Point.Parse(center);
-                var Range = Padding.Parse(range);
+                var Range = range;//Padding.Parse(range);
                 var Zoom = zoom ?? (int)Math.Log(Map.Scale, 2);
 
                 var CenterTile = Source.TileAtPoint(Center, Zoom);

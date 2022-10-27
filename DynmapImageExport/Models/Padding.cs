@@ -17,6 +17,6 @@
         }
         public int Width => Left + 1 + Right;
         public int Height => Top + 1 + Bottom;
-        public override string ToString() => $"{{Top={Top},Right={Right},Bottom={Bottom},Left={Left}}}";
+        public override string ToString() => $"[{Top},{Right},{Bottom},{Left}]";
     }
 }
