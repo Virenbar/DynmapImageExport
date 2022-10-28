@@ -23,15 +23,15 @@ var Parser = new CommandLineBuilder(RootCommand)
     .Build();
 
 #if DEBUG
-//Parser.Invoke("ls https://map.minecrafting.ru");
+Parser.Invoke("ls https://map.minecrafting.ru");
 AnsiConsole.WriteLine("<==========>");
-//Parser.Invoke("i https://map.minecrafting.ru/ world flat");
+Parser.Invoke("i https://map.minecrafting.ru world flat");
 AnsiConsole.WriteLine("<==========>");
-//Parser.Invoke("m https://map.minecrafting.ru/ world flat [0,100,0] [5,6,5,5] 2");
+//Parser.Invoke("m https://map.minecrafting.ru world flat [0,100,0] [6,6,5,5] 2");
 AnsiConsole.WriteLine("<==========>");
-Parser.Invoke("m https://map.minecrafting.ru/ world se_view [0,100,0] [5,11,5,10]");
+Parser.Invoke("m https://map.minecrafting.ru world se_view [0,100,0] [5,11,5,10] -nc");
 
-//Parser.Invoke("m https://map.minecrafting.ru/ world flat [2,2,2] [2,2]");
+//Parser.Invoke("m https://map.minecrafting.ru world flat [2,2,2] [2,2]");
 //https://ebs.virenbar.ru/dynmap/
 #endif
 

@@ -10,7 +10,7 @@ namespace DynmapImageExport.Commands
         public InfoCommand() : base("info", "Show info about map")
         {
             AddAlias("i");
-            AddArgument(new Argument<string>("url", "Dynmap URL"));
+            AddArgument(new Argument<Uri>("url", "Dynmap URL"));
             AddArgument(new Argument<string>("world", "World"));
             AddArgument(new Argument<string>("map", "Map"));
 
@@ -28,7 +28,7 @@ namespace DynmapImageExport.Commands
          * Max 'z' = 'z' * MapZoomOut //(3+ExtraZoomOut)? - 3 is default
          */
 
-        private async Task<int> HandleCommand(string URL, string world, string map)
+        private async Task<int> HandleCommand(Uri URL, string world, string map)
         {
             AnsiConsole.MarkupLine($"[yellow]Info for: {URL} - {world} - {map}[/]");
             var D = await GetDynmap(URL);

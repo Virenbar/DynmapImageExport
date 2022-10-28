@@ -10,10 +10,7 @@ namespace DynmapImageExport.Arguments
 
         private static Padding Parce(ArgumentResult result)
         {
-            if (result.Tokens.Count == 0)
-            {
-                return new Padding(2);
-            }
+            if (result.Tokens.Count == 0) { return new Padding(2); }
             try
             {
                 return Padding.Parse(result.Tokens[0].Value);

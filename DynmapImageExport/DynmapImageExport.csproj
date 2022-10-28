@@ -8,6 +8,7 @@
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/Virenbar/DynmapImageExport</RepositoryUrl>
+		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -20,7 +21,7 @@
 	<PropertyGroup>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
-	
+		
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />

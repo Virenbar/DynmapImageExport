@@ -8,9 +8,12 @@
         public static Point Parse(string point)
         {
             var S = point.Split(new[] { '[', ',', ']' }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
-            if (S.Count != 3) { throw new ArgumentException($"Invalid point argument: {point}", nameof(point)); }
+            if (S.Count != 3)
+            {
+                throw new ArgumentException($"Invalid point argument: {point}", nameof(point));
+            }
             return new Point(S[0], S[1], S[2]);
         }
-        public override string ToString() => $"{{X={X},Y={Y},Z={Z}}}";
+        public override string ToString() => $"[{X},{Y},{Z}]";
     }
 }

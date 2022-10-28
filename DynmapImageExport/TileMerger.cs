@@ -2,6 +2,7 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System.Diagnostics;
 using Point = SixLabors.ImageSharp.Point;
 
 namespace DynmapImageExport
@@ -20,6 +21,7 @@ namespace DynmapImageExport
 
         public void Merge(IProgress<string> IP)
         {
+            Trace.WriteLine($"Merge started: {Images.Count} images");
             using var Result = new Image<Rgba32>(Size * Images.Width, Size * Images.Height);
             var NImages = Images.Normilize();
             foreach (var (K, V) in NImages)
@@ -32,6 +34,7 @@ namespace DynmapImageExport
                 });
             }
             Result.SaveAsPng(Path);
+            Trace.WriteLine($"Merge done: {Result.Width}px X {Result.Height}px");
         }
     }
 }

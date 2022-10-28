@@ -5,7 +5,7 @@ namespace DynmapImageExport.Commands
 {
     internal static class Common
     {
-        public static async Task<DynMap> GetDynmap(string url)
+        public static async Task<DynMap> GetDynmap(Uri url)
         {
             var D = new DynMap(url);
             await AnsiConsole.Status()
@@ -13,7 +13,6 @@ namespace DynmapImageExport.Commands
                 .StartAsync("[yellow]Fetching dynmap...[/]", async ctx =>
                 {
                     await D.RefreshConfig();
-                    await Task.Delay(5000);
                 });
             return D;
         }

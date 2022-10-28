@@ -2,6 +2,7 @@
 using Spectre.Console;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using static DynmapImageExport.Commands.Common;
 using Padding = DynmapImageExport.Models.Padding;
@@ -13,25 +14,31 @@ namespace DynmapImageExport.Commands
         public MergeCommand() : base("merge", "Merge dynmap to image")
         {
             AddAlias("m");
-            AddArgument(new Argument<string>("url", "Dynmap URL"));
+            AddArgument(new Argument<Uri>("url", "Dynmap URL"));
             AddArgument(new Argument<string>("world", "World name"));
             AddArgument(new Argument<string>("map", "Map name"));
-            AddArgument(new Argument<string>("center", () => "[0,64,0]", "Center of image [x,y,z]"));
+            AddArgument(new Arguments.Center());
             AddArgument(new Arguments.Range());
-            // AddArgument(new Argument<string>("range", () => "[2]", "Range of image in tiles [all]|[vert,horz]|[top,right,bottom,left]"));
             AddArgument(new Argument<int>("zoom", () => 0, "Zoom"));
             AddOption(new Option<string>(new[] { "--output", "-o" }, "Output path"));
-
+            AddOption(new Option<bool>(new[] { "--no-cache", "-nc" }, "Ignore cached tiles"));
             Handler = CommandHandler.Create(HandleCommand);
         }
 
-        private static async Task<int> HandleCommand(string URL, string world, string map, string center, Padding range, int? zoom, string output)
+        private static async Task<int> HandleCommand(
+            Uri URL,
+            string world,
+            string map,
+            Point center,
+            Padding range,
+            int? zoom,
+            string output,
+            bool noCache)
         {
             try
             {
                 AnsiConsole.MarkupLine($"[yellow]Merging of: {URL} - {world} - {map}[/]");
                 var D = await GetDynmap(URL);
-
                 if (!D.Worlds.ContainsKey(world)) { throw new ArgumentException($"Invalid world name: {world}", nameof(world)); }
                 if (!D.Maps.ContainsKey((world, map))) { throw new ArgumentException($"Invalid map name: {map}", nameof(map)); }
                 //
@@ -39,19 +46,20 @@ namespace DynmapImageExport.Commands
                 var Map = D.Maps[(world, map)];
                 var Source = new TileSource(D, World, Map);
                 //
-                var Center = Point.Parse(center);
-                var Range = range;//Padding.Parse(range);
                 var Zoom = zoom ?? (int)Math.Log(Map.Scale, 2);
+                var CenterTile = Source.TileAtPoint(center, Zoom);
+                var Tiles = CenterTile.CreateTileMap(range);
 
-                var CenterTile = Source.TileAtPoint(Center, Zoom);
-                var Tiles = CenterTile.CreateTileMap(Range);
-
-                AnsiConsole.MarkupLine($"Center point: {Center}");
-                AnsiConsole.MarkupLine($"Central tile: {CenterTile}");
-                AnsiConsole.MarkupLine($"Range size: {Range.Height}x{Range.Width}");
-                AnsiConsole.MarkupLine($"Tiles to download: {Tiles.Count}");
+                var Info = $"""
+                    Center point: {center}
+                    Central tile: {CenterTile}
+                    Range size: {range.Height}x{range.Width}
+                    """;
+                Trace.WriteLine(Info);
+                AnsiConsole.WriteLine(Info);
                 // Download
-                var Images = await Download(Tiles);
+                AnsiConsole.WriteLine($"Tiles to download: {Tiles.Count}");
+                var Images = await Download(Tiles, !noCache);
                 AnsiConsole.MarkupLine($"Tiles downloaded: {Images.Count}");
                 // Merge
                 var path = output ?? $"{D.Config.Title} ({world}-{map}-{center}-{range}-{zoom})";
@@ -68,9 +76,9 @@ namespace DynmapImageExport.Commands
 
         #region Tasks
 
-        private static async Task<ImageMap> Download(TileMap range)
+        private static async Task<ImageMap> Download(TileMap range, bool useCache)
         {
-            using var TD = new TileDownloader(range);
+            using var TD = new TileDownloader(range) { UseCache = useCache };
             return await AnsiConsole.Progress()
                 .StartAsync(async ctx =>
                 {
@@ -92,7 +100,7 @@ namespace DynmapImageExport.Commands
 
         private static FileInfo Merge(ImageMap images, string path)
         {
-            path = path.Replace(".png", "", StringComparison.InvariantCultureIgnoreCase) + ".png";
+            path = Regex.Replace(path, @"\.\w{3,4}$", "", RegexOptions.IgnoreCase) + ".png";
             var M = new TileMerger(images, path);
 
             AnsiConsole.Progress()
