@@ -1,4 +1,5 @@
-﻿using DynmapImageExport.Models;
+﻿using DynmapImageExport.Arguments;
+using DynmapImageExport.Models;
 using Spectre.Console;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
@@ -17,23 +18,16 @@ namespace DynmapImageExport.Commands
             AddArgument(new Argument<Uri>("url", "Dynmap URL"));
             AddArgument(new Argument<string>("world", "World name"));
             AddArgument(new Argument<string>("map", "Map name"));
-            AddArgument(new Arguments.Center());
-            AddArgument(new Arguments.Range());
+            AddArgument(new PointArgument("center", "Center of image [x,y,z]"));
+            AddArgument(new PaddingArgument("range", "Range of image in tiles [all]|[vert,horz]|[top,right,bottom,left]"));
             AddArgument(new Argument<int>("zoom", () => 0, "Zoom"));
             AddOption(new Option<string>(new[] { "--output", "-o" }, "Output path"));
             AddOption(new Option<bool>(new[] { "--no-cache", "-nc" }, "Ignore cached tiles"));
             Handler = CommandHandler.Create(HandleCommand);
         }
 
-        private static async Task<int> HandleCommand(
-            Uri URL,
-            string world,
-            string map,
-            Point center,
-            Padding range,
-            int? zoom,
-            string output,
-            bool noCache)
+        private static async Task<int> HandleCommand(Uri URL, string world, string map, Point center, Padding range, int? zoom,
+            string output, bool noCache)
         {
             try
             {

@@ -4,9 +4,9 @@ using System.CommandLine.Parsing;
 
 namespace DynmapImageExport.Arguments
 {
-    internal class Range : Argument<Padding>
+    internal class PaddingArgument : Argument<Padding>
     {
-        public Range() : base("range", Parce, true, "Range of image in tiles [all]|[vert,horz]|[top,right,bottom,left]") { }
+        public PaddingArgument(string name, string description) : base(name, Parce, true, description) { }
 
         private static Padding Parce(ArgumentResult result)
         {

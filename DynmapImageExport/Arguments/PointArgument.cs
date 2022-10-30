@@ -4,9 +4,9 @@ using System.CommandLine.Parsing;
 
 namespace DynmapImageExport.Arguments
 {
-    internal class Center : Argument<Point>
+    internal class PointArgument : Argument<Point>
     {
-        public Center() : base("center", Parce, true, "Center of image [x,y,z]") { }
+        public PointArgument(string name, string description) : base(name, Parce, true, description) { }
 
         private static Point Parce(ArgumentResult result)
         {
