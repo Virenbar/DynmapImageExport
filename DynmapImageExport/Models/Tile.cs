@@ -43,6 +43,6 @@
 
         public string TileURL() => Source.TileURL(X, Y, Zoom);
 
-        public override string ToString() => $"{{X={X},Y={Y}}}";
+        public override string ToString() => $"[{X},{Y}]";
     }
 }

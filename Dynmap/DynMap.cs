@@ -7,33 +7,34 @@ namespace Dynmap
 {
     public class DynMap
     {
-        private readonly string URL;
+        private readonly Uri URL;
         private URL URLs;
 
-        public DynMap(string url)
+        public DynMap(string url) : this(new Uri(url)) { }
+
+        public DynMap(Uri url)
         {
-            URL = url.TrimEnd('/');
+            URL = url;
             Trace.WriteLine($"Dynmap URL: {URL}");
         }
 
         public Config Config { get; private set; }
 
         public Dictionary<(string world, string map), Map> Maps { get; private set; }
-
-        public string TilesURL => $"{URL}/{URLs.Tiles}";
+        public Uri TilesURL => new(URL, URLs.Tiles);
         public Dictionary<string, World> Worlds { get; private set; }
 
         public async Task RefreshConfig()
         {
-            using var Client = new HttpClient();
-            var URLFile = $"{URL}/standalone/config.js";
+            using var Client = new HttpClient { BaseAddress = URL };
 
+            var URLFile = "standalone/config.js";
             Trace.WriteLine($"Fetching: {URLFile}");
-            var urls = await Client.GetStringAsync(URLFile);
-            var Match = Regex.Match(urls, "url : (.+)};", RegexOptions.Singleline);
+            var URL_JS = await Client.GetStringAsync(URLFile);
+            var Match = Regex.Match(URL_JS, "url : (.+)};", RegexOptions.Singleline);
             URLs = JsonConvert.DeserializeObject<URL>(Match.Groups[1].Value);
 
-            var ConfigFile = $"{URL}/{ApplyTimestamp(URLs.Configuration)}";
+            var ConfigFile = ApplyTimestamp(URLs.Configuration);
             Trace.WriteLine($"Fetching: {ConfigFile}");
             var config = await Client.GetStringAsync(ConfigFile);
             Config = JsonConvert.DeserializeObject<Config>(config);
