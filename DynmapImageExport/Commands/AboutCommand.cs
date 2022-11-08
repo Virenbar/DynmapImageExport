@@ -1,12 +1,7 @@
 ﻿using Spectre.Console;
-using System;
-using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DynmapImageExport.Commands
 {
@@ -21,13 +16,24 @@ namespace DynmapImageExport.Commands
 
         private int HandleCommand()
         {
-            var Info = $"""
-                [yellow]DYNMAP IMAGE EXPORT[/]
-                Made by: [green]Virenbar[/]
-                Source: [white]https://github.com/Virenbar/DynmapImageExport [/]
-                Version: [yellow]{Assembly.GetExecutingAssembly().GetName().Version}[/]
-                """;
-            AnsiConsole.MarkupLine(Info);
+            var G = new Grid() { Width = 60 };
+            G.AddColumns(2);
+            var P = new Panel(G)
+            {
+                Header = new("[yellow]DYNMAP IMAGE EXPORT[/]", Justify.Center)
+            };
+            AnsiConsole.Live(P).Start(ctx =>
+            {
+                Thread.Sleep(500);
+                G.AddRow("Made by:", "[green]Virenbar[/]");
+                ctx.Refresh();
+                Thread.Sleep(500);
+                G.AddRow("Source:", "[white][link]https://github.com/Virenbar/DynmapImageExport[/][/]");
+                ctx.Refresh();
+                Thread.Sleep(500);
+                G.AddRow("Version:", $"[yellow]{Assembly.GetExecutingAssembly().GetName().Version}[/]");
+                ctx.Refresh();
+            });
             return 0;
         }
     }

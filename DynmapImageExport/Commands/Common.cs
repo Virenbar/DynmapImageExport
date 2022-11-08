@@ -7,7 +7,7 @@ namespace DynmapImageExport.Commands
     {
         public static async Task<DynMap> GetDynmap(Uri url)
         {
-            var D = new DynMap(url);
+            var D = new DynMap(new Uri(url.OriginalString.Split('?')[0]));
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
                 .StartAsync("[yellow]Fetching dynmap...[/]", async ctx =>

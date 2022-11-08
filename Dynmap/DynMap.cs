@@ -21,8 +21,7 @@ namespace Dynmap
         public Config Config { get; private set; }
 
         public Dictionary<(string world, string map), Map> Maps { get; private set; }
-
-        public string TilesURL => $"{URL}{URLs.Tiles}";
+        public Uri TilesURL => new(URL, URLs.Tiles);
         public Dictionary<string, World> Worlds { get; private set; }
 
         public async Task RefreshConfig()
@@ -45,6 +44,7 @@ namespace Dynmap
                 .SelectMany(W => W.Maps.Select(M => (W, M)))
                 .ToDictionary(X => (X.W.Name, X.M.Name), X => X.M);
         }
+
         private static string ApplyTimestamp(string str) => str.Replace("{timestamp}", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString());
     }
 }

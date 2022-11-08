@@ -14,7 +14,8 @@ namespace DynmapImageExport.Models
 
         public DynMap DynMap { get; }
         public Map Map { get; }
-        public string Title => DynMap.Config.Title;
+        public Uri TilesURL => DynMap.TilesURL;
+        public string Title => DynMap.Config.Title.RemoveInvalidChars();
         public World World { get; }
 
         public Tile TileAtPoint(Point point, int zoom)
@@ -33,6 +34,9 @@ namespace DynmapImageExport.Models
 
         private static int Round(double N, int Z) => (int)(Z * Math.Ceiling(N / Z));
 
+        /// <summary>
+        /// World to Map
+        /// </summary>
         private (int X, int Y) WTM(Point point, int zoom)
         {
             var T = Map.WorldToMap;

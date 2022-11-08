@@ -6,27 +6,27 @@ using System.Text;
 
 namespace DynmapImageExport.Options
 {
-    internal class Verbose : Option<bool>
+    internal class Trace : Option<bool>
     {
         private static TraceListener TL;
 
-        public Verbose() : base(new[] { "--verbose", "-v" }, "Write trace log") { }
+        public Trace() : base(new[] { "--trace", "-t" }, "Write trace log") { }
 
         public static CommandLineBuilder AddToBuilder(CommandLineBuilder builder)
         {
-            var Verbose = new Verbose();
-            builder.Command.AddGlobalOption(Verbose);
+            var Trace = new Trace();
+            builder.Command.AddGlobalOption(Trace);
             builder.AddMiddleware((context, next) =>
             {
-                var verbose = context.ParseResult.FindResultFor(Verbose) is not null;
-                if (verbose && !Trace.Listeners.Contains(TL))
+                var trace = context.ParseResult.FindResultFor(Trace) is not null;
+                if (trace && !System.Diagnostics.Trace.Listeners.Contains(TL))
                 {
                     TL ??= new LogListener();
-                    Trace.Listeners.Add(TL);
+                    System.Diagnostics.Trace.Listeners.Add(TL);
                 }
                 else
                 {
-                    Trace.Listeners.Remove(TL);
+                    System.Diagnostics.Trace.Listeners.Remove(TL);
                 }
                 return next(context);
             });
@@ -49,7 +49,7 @@ namespace DynmapImageExport.Options
                 Writer = new StreamWriter("trace.log", true, Encoding.UTF8) { AutoFlush = true };
             }
 
-            private string TimeStamp => $"[{DateTime.Now:HH:mm:ss.fff}]";
+            private static string TimeStamp => $"[{DateTime.Now:HH:mm:ss.fff}]";
 
             public override void Write(string message) => Writer.Write($"{TimeStamp} {message}");
 

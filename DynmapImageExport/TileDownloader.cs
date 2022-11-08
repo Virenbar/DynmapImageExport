@@ -6,12 +6,11 @@ namespace DynmapImageExport
 {
     internal class TileDownloader : IDisposable
     {
-        private readonly HttpClient Client = new();
         private readonly ImageMap Files = new();
         private readonly TileMap Range;
         private readonly SemaphoreSlim Semaphore;
         private readonly string Title;
-        public bool UseCache { get; set; } = true;
+        private HttpClient Client;
 
         public TileDownloader(TileMap range) : this(range, 4) { }
 
@@ -23,22 +22,24 @@ namespace DynmapImageExport
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
-        public async Task<ImageMap> Download(IProgress<string> IP = null)
+        public bool UseCache { get; set; } = true;
+
+        public async Task<ImageMap> Download(IProgress<int> IP = null)
         {
             Trace.WriteLine($"Download started: {Range.Count} tiles");
-            Trace.Indent();
-            Files.Clear();
-            var Tasks = Range.Select(async (KV) =>
+            using (Client = new() { BaseAddress = Range.Source.TilesURL })
             {
-                var (K, V) = KV;
-                var (B, Path) = await TryDownloadTile(V);
-                if (B) { Files[K] = Path; }
-                IP.Report("");
-            });
-            await Task.WhenAll(Tasks);
-            Trace.Unindent();
+                Files.Clear();
+                var Tasks = Range.Select(async (KV) =>
+                {
+                    var (K, V) = KV;
+                    var (B, Path) = await TryDownloadTile(V);
+                    if (B) { Files[K] = Path; }
+                    IP?.Report(1);
+                });
+                await Task.WhenAll(Tasks);
+            }
             Trace.WriteLine($"Download done: {Files.Count} tiles");
-
             return Files;
         }
 
@@ -53,18 +54,24 @@ namespace DynmapImageExport
             try
             {
                 await Semaphore.WaitAsync();
-                var URL = tile.TileURL();
+                var URL = tile.TilePath();
                 Trace.WriteLine($"Downloading tile: {URL} ");
-                var C = await Client.GetAsync(URL);
+                var Responce = await Client.GetAsync(URL);
+                if (!Responce.IsSuccessStatusCode)
+                {
+                    Trace.WriteLine($"Tile not found: {tile}");
+                    return (false, null);
+                }
+
                 Directory.CreateDirectory(LocalFile.DirectoryName);
                 using var FS = new FileStream(LocalFile.FullName, FileMode.Create);
-                await C.Content.CopyToAsync(FS);
+                await Responce.Content.CopyToAsync(FS);
 
                 return (true, LocalFile.FullName);
             }
             catch (WebException e)
             {
-                Trace.WriteLine($"Download error: {tile} - {e.Message}");
+                Trace.WriteLine($"Tile: {tile} - {e.Message}");
             }
             finally
             {

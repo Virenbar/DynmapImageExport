@@ -1,49 +1,68 @@
-﻿using DynmapImageExport;
-using DynmapImageExport.Commands;
+﻿using DynmapImageExport.Commands;
 using Spectre.Console;
 using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.Text;
+using System.Text.RegularExpressions;
 
-Console.OutputEncoding = Encoding.UTF8;
-Console.InputEncoding = Encoding.UTF8;
-
-var RootCommand = new RootCommand("Dynmap Image Export") {
-    new ListCommand(),
-    new InfoCommand(),
-    new MergeCommand(),
-    new AboutCommand()
-};
-
-var Parser = new CommandLineBuilder(RootCommand)
-    .UseVerbose()
-    .UseParseErrorReporting()
-    .UseExceptionHandler()
-    .UseHelp()
-    .Build();
-
-#if DEBUG
-Parser.Invoke("a");
-//Parser.Invoke("ls https://map.minecrafting.ru");
-//Parser.Invoke("i https://map.minecrafting.ru world flat");
-//Parser.Invoke("m https://map.minecrafting.ru world flat [0,100,0] [6,6,5,5] 2");
-Parser.Invoke("m https://map.minecrafting.ru world se_view [0,100,0] [5,11,5,10] -nc");
-
-//Parser.Invoke("m https://map.minecrafting.ru world flat [2,2,2] [2,2]");
-//https://ebs.virenbar.ru/dynmap/
-#endif
-
-if (args.Length > 0) { Parser.Invoke(args); }
-else
+namespace DynmapImageExport
 {
-    Parser.Invoke("-h");
-    while (true)
+    public static class Program
     {
-        AnsiConsole.MarkupLine("[green]Input command:[/]");
-        var Input = AnsiConsole.Prompt(new TextPrompt<string>("[green]>[/]"));
-        Input = Input.Replace("DynmapImageExport", "");
-        AnsiConsole.WriteLine();
-        Parser.Invoke(Input);
+        private static readonly Regex Brackets = new(@"\s+(?=[^[\]]*\])");
+        private static readonly Parser Parser;
+
+        static Program()
+        {
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.InputEncoding = Encoding.UTF8;
+
+            var RootCommand = new RootCommand("Dynmap Image Export") {
+                new AboutCommand(),
+                new ListCommand(),
+                new InfoCommand(),
+                new MergeCommand()
+            };
+
+            Parser = new CommandLineBuilder(RootCommand)
+               .UseTrace()
+               .UseParseErrorReporting()
+               .UseExceptionHandler(ExceptionHandler.Handle)
+               .UseHelp()
+               .Build();
+        }
+
+        internal static int Invoke(string[] args) => Invoke(string.Join(' ', args));
+
+        internal static int Invoke(string args)
+        {
+            args = args.Replace("DynmapImageExport", "");
+            args = Brackets.Replace(args, "");
+            return Parser.Invoke(args);
+        }
+
+        private static int Main(string[] args)
+        {
+#if DEBUG
+            Debug.Invoke();
+#endif
+            if (args.Length > 0)
+            {
+                return Invoke(args);
+            }
+            else
+            {
+                Invoke("-h");
+                while (true)
+                {
+                    AnsiConsole.MarkupLine("[green]Input command:[/]");
+                    var Input = AnsiConsole.Prompt(new TextPrompt<string>("[green]>[/]"));
+                    Input = Input.Replace("DynmapImageExport", "");
+                    AnsiConsole.WriteLine();
+                    Parser.Invoke(Input);
+                }
+            }
+        }
     }
 }
