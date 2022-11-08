@@ -8,9 +8,10 @@ Command line tool that downloads tiles from Dynmap HTTP server and merges them i
 .\DynmapImageExport <command> <url> [arguments] [options]
 
 Commands:
+    a, about                                              Show info about application
     list, ls <url>                                        Show available worlds and maps
     i, info <url> <world> <map>                           Show info about map
-    m, merge <url> <world> <map> <center> <range> <zoom>  Merge dynmap to image [center: [0,64,0], range: [2], zoom: 0]
+    m, merge <url> <world> <map> <center> <range> <zoom>  Merge dynmap to image [center: [0,100,0], range: [2] ]
 
 Arguments:
     <url>     Dynmap URL
@@ -18,12 +19,13 @@ Arguments:
     <map>     Map name
     <center>  Center of image [x,y,z] [default: [0,64,0]]
     <range>   Range of image in tiles [all]|[vert,horz]|[top,right,bottom,left] [default: [2]]
-    <zoom>    Zoom [default: 0]
+    <zoom>    Zoom []
 
 Options:
-    -?, -h, --help  Show help and usage information
-    -v, --verbose   Show trace log
     -o, --output <output>  Output path
+    -nc, --no-cache        Ignore cached tiles
+    -t, --trace            Write trace log
+    -?, -h, --help         Show help and usage information
 ```
 
 ## Installation
@@ -88,13 +90,14 @@ Used arguments:
     This will produce 12x12 tiles image(1536x1536 in pixels)
 * `2` - Zoom level. 1:1 scale in this example.
 
-### Range notes
+### Notes
 
-Range is number of tiles from center tile (i.e. padding)  
-
-* `[2]` - 5x5 tiles image - 2 in each direction  
-* `[2,3]` - 5x7 tiles image - 2 to top and bottom, 3 to right and left  
-* `[2,3,2,2]` - 5x6 tiles image - 2 to top, 3 to right, 2 to bottom, 2 to left
+* Default zoom is 1:1 scale (i.e. 1 block to 1 pixel)
+* Size of 10Kpx X 10Kpx image ~= 150MB; 20Kpx X 20Kpx ~= 450MB
+* Range is number of tiles from center tile (i.e. padding)  
+  * `[2]` - 5x5 tiles image - 2 in each direction  
+  * `[2,3]` - 5x7 tiles image - 2 to top and bottom, 3 to right and left  
+  * `[2,3,2,2]` - 5x6 tiles image - 2 to top, 3 to right, 2 to bottom, 2 to left
 
 ## Example
 
