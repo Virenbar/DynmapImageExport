@@ -8,7 +8,6 @@
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/Virenbar/DynmapImageExport</RepositoryUrl>
-		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>

@@ -16,7 +16,7 @@ namespace DynmapImageExport
             {
                 AnsiConsole.MarkupLineInterpolated($"[red]{HRE.Message}[/]");
             }
-            else if (exception is OperationCanceledException) { }
+            else if (exception is OperationCanceledException) { return; }
             else
             {
                 AnsiConsole.MarkupInterpolated($"[red]{context.LocalizationResources.ExceptionHandlerHeader()}[/]");

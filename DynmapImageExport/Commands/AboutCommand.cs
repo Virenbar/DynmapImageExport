@@ -16,9 +16,9 @@ namespace DynmapImageExport.Commands
 
         private int HandleCommand()
         {
-            var G = new Grid() { Width = 60 };
+            Grid G = new() { Width = 60 };
             G.AddColumns(2);
-            var P = new Panel(G)
+            Panel P = new(G)
             {
                 Header = new("[yellow]DYNMAP IMAGE EXPORT[/]", Justify.Center)
             };

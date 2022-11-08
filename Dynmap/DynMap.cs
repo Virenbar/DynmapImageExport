@@ -26,7 +26,7 @@ namespace Dynmap
 
         public async Task RefreshConfig()
         {
-            using var Client = new HttpClient() { BaseAddress = URL };
+            using var Client = new HttpClient { BaseAddress = URL };
 
             var URLFile = "standalone/config.js";
             Trace.WriteLine($"Fetching: {URLFile}");

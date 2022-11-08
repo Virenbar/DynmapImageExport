@@ -11,14 +11,14 @@ namespace DynmapImageExport
             https://map.minecrafting.ru
             */
             // Valid
-            Program.Invoke("a");
+            //Program.Invoke("a");
             //Program.Invoke("ls https://map.minecrafting.ru");
-            Program.Invoke("i https://map.minecrafting.ru world flat");
+            //Program.Invoke("i https://map.minecrafting.ru world flat");
             //Program.Invoke("m https://map.minecrafting.ru world flat [0,100,0] [6,6,5,5] 2");
             //Program.Invoke("m https://map.minecrafting.ru/?worldname=world&mapname=flat world se_view [0, 100 ,0] [5, 11,5,10] -nc");
             //Program.Invoke("m https://map.minecrafting.ru/ world flat [0,100,0] [80]");
-            //Program.Invoke("m https://map.minecrafting.ru/ world flat [0,100,0] [40] 3 -nc");
-            Program.Invoke("m https://map.minecrafting.ru/ world flat [0,100,0] [20] 4");
+            //Program.Invoke("m https://map.minecrafting.ru/ world flat [0,100,0] [40] 3");
+            //Program.Invoke("m https://map.minecrafting.ru/ world flat [0,100,0] [20] 4");
             //Program.Invoke("m https://map.minecrafting.ru/ world flat [0,100,0] [10] 5");
             //Program.Invoke("m https://map.minecrafting.ru/ world flat [0,100,0] [5] 6");
 
