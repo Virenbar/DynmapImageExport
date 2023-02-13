@@ -34,6 +34,19 @@ namespace DynmapImageExport.Models
 
         private static int Round(double N, int Z) => (int)(Z * Math.Ceiling(N / Z));
 
+        public void ValidateZoom(int? zoom)
+        {
+            if (zoom is null) { return; }
+            if (zoom < 0)
+            {
+                throw new ArgumentException($"Invalid zoom: {zoom} (Minimum zoom: 0)");
+            }
+            if (zoom > Map.MapZoomOut)
+            {
+                throw new ArgumentException($"Invalid zoom: {zoom} (Maximum zoom: {Map.MapZoomOut})");
+            }
+        }
+
         /// <summary>
         /// World to Map
         /// </summary>

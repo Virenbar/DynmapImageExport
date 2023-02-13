@@ -1,5 +1,6 @@
 ﻿using DynmapImageExport.Models;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System.Diagnostics;
@@ -35,10 +36,36 @@ namespace DynmapImageExport
             Trace.WriteLine($"Merge done: {Result.Width}px X {Result.Height}px");
         }
 
-        public FileInfo Save(string path)
+        public FileInfo Save(string path, ImageFormat format)
         {
-            Result.SaveAsPng(path);
-            Trace.WriteLine($"Image saved: {path}");
+            var File = format switch
+            {
+                ImageFormat.PNG => SavePNG(path),
+                ImageFormat.JPEG => SaveJPEG(path),
+                ImageFormat.WEBP => SaveWEBP(path),
+                _ => throw new ArgumentException($"Invalid format: {format}", nameof(format))
+            };
+            Trace.WriteLine($"Image saved: {File.FullName}");
+            return File;
+        }
+
+        public FileInfo Save(string path) => Save(path, ImageFormat.PNG);
+
+        private FileInfo SaveJPEG(string path)
+        {
+            Result.SaveAsJpeg(path + ".jpeg");
+            return new FileInfo(path);
+        }
+
+        private FileInfo SavePNG(string path)
+        {
+            Result.SaveAsPng(path + ".png");
+            return new FileInfo(path);
+        }
+
+        private FileInfo SaveWEBP(string path)
+        {
+            Result.SaveAsWebp(path + ".webp");
             return new FileInfo(path);
         }
 

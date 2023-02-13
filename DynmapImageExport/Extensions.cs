@@ -43,7 +43,7 @@ namespace DynmapImageExport
             return string.Join("_", str.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
         }
 
-        internal static CommandLineBuilder UseTrace(this CommandLineBuilder builder) => Trace.AddToBuilder(builder);
+        internal static CommandLineBuilder UseTrace(this CommandLineBuilder builder) => TraceOption.AddToBuilder(builder);
 
         #region Map
 

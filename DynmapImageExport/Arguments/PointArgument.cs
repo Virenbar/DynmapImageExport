@@ -4,16 +4,24 @@ using System.CommandLine.Parsing;
 
 namespace DynmapImageExport.Arguments
 {
-    internal class PointArgument : Argument<Point>
+    internal class PointArgument : Argument<Point[]>
     {
-        public PointArgument(string name, string description) : base(name, Parce, true, description) { }
+        /// <summary>
+        /// Initializes a new instance of "point" argument
+        /// </summary>
+        public PointArgument() : this("point", "Point of map [x,y,z]") { }
 
-        private static Point Parce(ArgumentResult result)
+        public PointArgument(string name, string description) : base(name, Parce, true, description)
         {
-            if (result.Tokens.Count == 0) { return new Point(0, 100, 0); }
+            Arity = ArgumentArity.ZeroOrMore;
+        }
+
+        private static Point[] Parce(ArgumentResult result)
+        {
+            if (result.Tokens.Count == 0) { return new[] { new Point(0, 100, 0) }; }
             try
             {
-                return Point.Parse(result.Tokens[0].Value);
+                return result.Tokens.Select(t => Point.Parse(t.Value)).ToArray();
             }
             catch (Exception e)
             {

@@ -7,17 +7,17 @@ namespace DynmapImageExport
     internal class TileDownloader : IDisposable
     {
         private readonly ImageMap Files = new();
-        private readonly TileMap Range;
         private readonly SemaphoreSlim Semaphore;
+        private readonly TileMap Tiles;
         private readonly string Title;
         private HttpClient Client;
 
-        public TileDownloader(TileMap range) : this(range, 4) { }
+        public TileDownloader(TileMap tiles) : this(tiles, 4) { }
 
-        public TileDownloader(TileMap range, int threads)
+        public TileDownloader(TileMap tiles, int threads)
         {
-            Range = range;
-            Title = Range.Source.Title;
+            Tiles = tiles;
+            Title = Tiles.Source.Title;
             Semaphore = new(threads);
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
@@ -26,11 +26,11 @@ namespace DynmapImageExport
 
         public async Task<ImageMap> Download(IProgress<int> IP = null)
         {
-            Trace.WriteLine($"Download started: {Range.Count} tiles");
-            using (Client = new() { BaseAddress = Range.Source.TilesURL })
+            Trace.WriteLine($"Download started: {Tiles.Count} tiles");
+            using (Client = new() { BaseAddress = Tiles.Source.TilesURL })
             {
                 Files.Clear();
-                var Tasks = Range.Select(async (KV) =>
+                var Tasks = Tiles.Select(async (KV) =>
                 {
                     var (K, V) = KV;
                     var (B, Path) = await TryDownloadTile(V);
