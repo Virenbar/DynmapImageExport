@@ -49,21 +49,6 @@ namespace DynmapImageExport
 
         internal static string ScaleToString(this Map _, double scale) => scale >= 1 ? $"{scale}:1" : $"1:{1 / scale}";
 
-        internal static int ScaleToZoom(this Map map, double scale) => (int)Math.Log(map.Scale / scale, 2);
-
-        internal static void ValidateZoom(this Map map, int? zoom)
-        {
-            if (zoom is null) { return; }
-            if (zoom < 0)
-            {
-                throw new ArgumentException($"Invalid zoom: {zoom} (Minimum zoom: 0)");
-            }
-            if (zoom > map.MapZoomOut)
-            {
-                throw new ArgumentException($"Invalid zoom: {zoom} (Maximum zoom: {map.MapZoomOut})");
-            }
-        }
-
         internal static double ZoomToScale(this Map map, int zoom) => map.Scale / Math.Pow(2, zoom);
 
         internal static string ZoomToString(this Map map, int zoom) => map.ScaleToString(map.ZoomToScale(zoom));

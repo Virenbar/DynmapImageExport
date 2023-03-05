@@ -1,6 +1,5 @@
 ﻿using DynmapImageExport.Models;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System.Diagnostics;
@@ -41,7 +40,7 @@ namespace DynmapImageExport
             var File = format switch
             {
                 ImageFormat.PNG => SavePNG(path),
-                ImageFormat.JPEG => SaveJPEG(path),
+                ImageFormat.JPG => SaveJPG(path),
                 ImageFormat.WEBP => SaveWEBP(path),
                 _ => throw new ArgumentException($"Invalid format: {format}", nameof(format))
             };
@@ -51,9 +50,9 @@ namespace DynmapImageExport
 
         public FileInfo Save(string path) => Save(path, ImageFormat.PNG);
 
-        private FileInfo SaveJPEG(string path)
+        private FileInfo SaveJPG(string path)
         {
-            Result.SaveAsJpeg(path + ".jpeg");
+            Result.SaveAsJpeg(path + ".jpg");
             return new FileInfo(path);
         }
 

@@ -25,31 +25,32 @@
             var MinY = tiles.Min(T => T.Y);
             var MaxY = tiles.Max(T => T.Y);
 
-            //var TileOrigin = tiles.OrderBy(T => T.Y).OrderBy(T => T.X).First();
             // Top left tile
             var TileOrigin = tiles.First().NewTile(MinX, MaxY);
 
-            var Scale = 1 << TileOrigin.Zoom;
+            var ZoomScale = 1 << TileOrigin.Zoom;
             var Tiles = new TileMap(TileOrigin.Source)
             {
                 [(0, 0)] = TileOrigin
             };
+            // Add original tiles
             foreach (var tile in tiles)
             {
-                var dx = (tile.X - TileOrigin.X) / Scale;
-                var dy = -((tile.Y - TileOrigin.Y) / Scale);
+                var dx = (tile.X - TileOrigin.X) / ZoomScale;
+                var dy = -((tile.Y - TileOrigin.Y) / ZoomScale);
                 if (Tiles.ContainsKey((dx, dy))) { continue; }
                 Tiles[(dx, dy)] = tile;
             }
             var Width = Tiles.Width;
             var Height = Tiles.Height;
+            // Add all tiles with padding
             for (int dy = -padding.Top; dy < Height + padding.Bottom; dy++)
             {
                 for (int dx = -padding.Left; dx < Width + padding.Right; dx++)
                 {
                     if (Tiles.ContainsKey((dx, dy))) { continue; }
-                    var x = TileOrigin.X + dx * Scale;
-                    var y = TileOrigin.Y - dy * Scale;
+                    var x = TileOrigin.X + dx * ZoomScale;
+                    var y = TileOrigin.Y - dy * ZoomScale;
                     Tiles[(dx, dy)] = TileOrigin.NewTile(x, y);
                 }
             }

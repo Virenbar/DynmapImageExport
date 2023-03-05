@@ -6,7 +6,6 @@ using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using static DynmapImageExport.Commands.Common;
 using Padding = DynmapImageExport.Models.Padding;
 
 namespace DynmapImageExport.Commands
@@ -32,18 +31,17 @@ namespace DynmapImageExport.Commands
         private static async Task<int> HandleCommand(Uri URL, string world, string map, Point[] point, Padding padding,
             int? zoom, string output, ImageFormat? format, bool noCache)
         {
-            var center = point[0];
             AnsiConsole.MarkupLine($"[yellow]Merging of: {URL.Host} - {world} - {map}[/]");
-            var Dynmap = await GetDynmap(URL);
+            var Dynmap = await Common.GetDynmap(URL);
             var World = Dynmap.GetWorld(world);
             var Map = World.GetMap(map);
             var Source = new TileSource(Dynmap, World, Map);
-            var Zoom = zoom ?? Map.ScaleToZoom(1);
-            var Format = format ?? ImageFormat.PNG;
             Source.ValidateZoom(zoom);
+            var Zoom = zoom ?? Source.ScaleToZoom(1);
+            var Format = format ?? Source.ImageFormat;
 
-            var PointTiles = point.Select(P => Source.TileAtPoint(P, Zoom)).ToList();
-            var Tiles = TileMap.CreateTileMap(PointTiles, padding);// CenterTile.CreateTileMap(range);
+            var PointTiles = point.Select(P => Source.PointToTile(P, Zoom)).ToList();
+            var Tiles = TileMap.CreateTileMap(PointTiles, padding);
 
             var Points = string.Join("~", point.Select(P => $"{P}"));
             var Size = $"~{Tiles.Height} X ~{Tiles.Width}(~{Tiles.Height * 128}px X ~{Tiles.Width * 128}px)";
@@ -56,7 +54,7 @@ namespace DynmapImageExport.Commands
             AnsiConsole.Write(Info);
             Trace.WriteLine($"Input: {world}-{map}-{Points}-{padding}-{Zoom}");
 
-            var FilePath = output ?? $"{Tiles.Source.Title} ({world}-{map}-{Points}-{padding}-{Zoom})";
+            var FilePath = output ?? $"{Source.Title} ({world}-{map}-{Points}-{padding}-{Zoom})";
             FilePath = Regex.Replace(FilePath, @"\.\w{3,4}$", "", RegexOptions.IgnoreCase);
 
             var SW = new Stopwatch();

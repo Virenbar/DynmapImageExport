@@ -1,7 +1,6 @@
 ﻿using Spectre.Console;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
-using static DynmapImageExport.Commands.Common;
 
 namespace DynmapImageExport.Commands
 {
@@ -18,7 +17,7 @@ namespace DynmapImageExport.Commands
         private async Task<int> HandleCommand(Uri URL)
         {
             AnsiConsole.MarkupLine($"[yellow]List for: {URL.Host}[/]");
-            var Dynmap = await GetDynmap(URL);
+            var Dynmap = await Common.GetDynmap(URL);
             var Worlds = Dynmap.Config.Worlds;
             var MapNameMax = Worlds.SelectMany(W => W.Maps).Max(M => M.Name.Length);
 

@@ -1,7 +1,6 @@
 ﻿using Spectre.Console;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
-using static DynmapImageExport.Commands.Common;
 
 namespace DynmapImageExport.Commands
 {
@@ -31,7 +30,7 @@ namespace DynmapImageExport.Commands
         private async Task<int> HandleCommand(Uri URL, string world, string map)
         {
             AnsiConsole.MarkupLine($"[yellow]Info for: {URL.Host} - {world} - {map}[/]");
-            var Dynmap = await GetDynmap(URL);
+            var Dynmap = await Common.GetDynmap(URL);
             var World = Dynmap.GetWorld(world);
             var Map = World.GetMap(map);
             var MaxOut = Map.MapZoomOut;

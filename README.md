@@ -1,6 +1,6 @@
 # Dynmap Image Export [![Build artifact](https://img.shields.io/github/actions/workflow/status/Virenbar/DynmapImageExport/build-artifact.yml?label=Build&logo=github)](https://github.com/Virenbar/DynmapImageExport/actions/workflows/build-artifact.yml)
 
-Command line tool that downloads tiles from Dynmap HTTP server and merges them into one image.
+CLI tool for downloading tiles from Dynmap HTTP server and merging them into one image.
 
 ![terminal](/assets/images/terminal.gif)
 
@@ -93,14 +93,25 @@ Used arguments:
 
 ### Notes
 
+* Executing without arguments will launch in interactive mode
 * Default zoom is 1:1 scale (i.e. 1 block to 1 pixel)
 * Size of 10Kpx X 10Kpx image ~= 150MB; 20Kpx X 20Kpx ~= 450MB
-* Padding is number of tiles from points
-  * `[2]` - 5x5 tiles image - 2 in each direction  
-  * `[2,3]` - 5x7 tiles image - 2 to top and bottom, 3 to right and left  
-  * `[2,3,2,2]` - 5x6 tiles image - 2 to top, 3 to right, 2 to bottom, 2 to left
 
-## Example
+## Points and Padding example
+
+You can provide any number of points. They will be combined into a region. Padding will be added to the resulting region.
+
+* `[2]` - 2 in each direction  
+* `[2,3]` - 2 to top and bottom, 3 to right and left  
+* `[2,3,2,2]` - 2 to top, 3 to right, 2 to bottom, 2 to left
+  
+One point with padding `[1,2,3,2]`  
+![1 point](./assets/images/Point-1.svg)  
+
+Three points with padding `[1]`  
+![3 points](./assets/images/Point-3.svg)
+
+## Image example
 
 ### Flat map
 

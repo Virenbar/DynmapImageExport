@@ -3,7 +3,7 @@
     internal enum ImageFormat
     {
         PNG,
-        JPEG,
+        JPG,
         WEBP
     }
 }

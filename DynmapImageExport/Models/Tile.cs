@@ -21,7 +21,7 @@
 
         public string TilePath() => Source.TilePath(X, Y, Zoom);
 
-        public string TileURL() => Source.TileURL(X, Y, Zoom);
+        public string TileURI() => Source.TileURI(X, Y, Zoom);
 
         public override string ToString() => $"[{X},{Y}]";
     }
