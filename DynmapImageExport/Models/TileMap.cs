@@ -1,4 +1,6 @@
-﻿namespace DynmapImageExport.Models
+﻿using System.Diagnostics;
+
+namespace DynmapImageExport.Models
 {
     internal class TileMap : Dictionary<(int DX, int DY), Tile>
     {
@@ -24,6 +26,7 @@
             var MaxX = tiles.Max(T => T.X);
             var MinY = tiles.Min(T => T.Y);
             var MaxY = tiles.Max(T => T.Y);
+            Trace.WriteLine($"MinX:{MinX} ~ MaxX:{MaxX} ~ MinY:{MinY} ~ MaxY:{MaxY}");
 
             // Top left tile
             var TileOrigin = tiles.First().NewTile(MinX, MaxY);
@@ -41,12 +44,12 @@
                 if (Tiles.ContainsKey((dx, dy))) { continue; }
                 Tiles[(dx, dy)] = tile;
             }
-            var Width = Tiles.Width;
-            var Height = Tiles.Height;
+            var width = Tiles.Width;
+            var height = Tiles.Height;
             // Add all tiles with padding
-            for (int dy = -padding.Top; dy < Height + padding.Bottom; dy++)
+            for (int dy = -padding.Top; dy < height + padding.Bottom; dy++)
             {
-                for (int dx = -padding.Left; dx < Width + padding.Right; dx++)
+                for (int dx = -padding.Left; dx < width + padding.Right; dx++)
                 {
                     if (Tiles.ContainsKey((dx, dy))) { continue; }
                     var x = TileOrigin.X + dx * ZoomScale;

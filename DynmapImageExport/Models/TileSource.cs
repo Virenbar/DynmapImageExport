@@ -57,7 +57,7 @@ namespace DynmapImageExport.Models
             var YY = Sy >> 5;
             */
 
-            //var Scale = (int)Math.Pow(2, zoom);
+            // Scale = (int)Math.Pow(2, zoom);
             var ZoomScale = 1 << zoom;
             var dimension = 128; //Can be different?
 
