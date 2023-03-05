@@ -1,11 +1,11 @@
 ﻿using DynmapImageExport.Arguments;
 using DynmapImageExport.Models;
+using DynmapImageExport.Options;
 using Spectre.Console;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using static DynmapImageExport.Commands.Common;
 using Padding = DynmapImageExport.Models.Padding;
 
 namespace DynmapImageExport.Commands
@@ -18,41 +18,44 @@ namespace DynmapImageExport.Commands
             AddArgument(new Argument<Uri>("url", "Dynmap URL"));
             AddArgument(new Argument<string>("world", "World name"));
             AddArgument(new Argument<string>("map", "Map name"));
-            AddArgument(new PointArgument("center", "Center of image [x,y,z]"));
-            AddArgument(new PaddingArgument("range", "Range of image in tiles [all]|[vert,horz]|[top,right,bottom,left]"));
-            AddArgument(new Argument<int?>("zoom", () => null, "Zoom"));
-            AddOption(new Option<string>(new[] { "--output", "-o" }, "Output path"));
-            AddOption(new Option<bool>(new[] { "--no-cache", "-nc" }, "Ignore cached tiles"));
+            AddArgument(new PointArgument());
+            AddOption(new PaddingOption());
+            AddOption(new ZoomOption());
+            AddOption(new OutputOption());
+            AddOption(new FormatOption());
+            AddOption(new NoCacheOption());
 
             Handler = CommandHandler.Create(HandleCommand);
         }
 
-        private static async Task<int> HandleCommand(Uri URL, string world, string map, Point center, Padding range, int? zoom,
-            string output, bool noCache)
+        private static async Task<int> HandleCommand(Uri URL, string world, string map, Point[] point, Padding padding,
+            int? zoom, string output, ImageFormat? format, bool noCache)
         {
             AnsiConsole.MarkupLine($"[yellow]Merging of: {URL.Host} - {world} - {map}[/]");
-            var Dynmap = await GetDynmap(URL);
+            var Dynmap = await Common.GetDynmap(URL);
             var World = Dynmap.GetWorld(world);
             var Map = World.GetMap(map);
             var Source = new TileSource(Dynmap, World, Map);
-            var Zoom = zoom ?? Map.ScaleToZoom(1);
-            Map.ValidateZoom(zoom);
+            Source.ValidateZoom(zoom);
+            var Zoom = zoom ?? Source.ScaleToZoom(1);
+            var Format = format ?? Source.ImageFormat;
 
-            var CenterTile = Source.TileAtPoint(center, Zoom);
-            var Tiles = CenterTile.CreateTileMap(range);
+            var PointTiles = point.Select(P => Source.PointToTile(P, Zoom)).ToList();
+            var Tiles = TileMap.CreateTileMap(PointTiles, padding);
 
+            var Points = string.Join("~", point.Select(P => $"{P}"));
+            var Size = $"~{Tiles.Height} X ~{Tiles.Width}(~{Tiles.Height * 128}px X ~{Tiles.Width * 128}px)";
             var Info = new Grid()
                 .AddColumns(2)
-                .AddRow("Center point:", $"{center}".EscapeMarkup())
-                .AddRow("Central tile:", $"{CenterTile}".EscapeMarkup())
-                .AddRow("Range size:", $"{range.Height} X {range.Width}")
+                .AddRow("Points:", Points.EscapeMarkup())
+                .AddRow("Padding:", $"{padding}".EscapeMarkup())
                 .AddRow("Tiles count:", $"~{Tiles.Count}")
-                .AddRow("Image size:", $"~{range.Height * 128}px X ~{range.Width * 128}px");
+                .AddRow("Image size:", Size);
             AnsiConsole.Write(Info);
-            Trace.WriteLine($"Input: {world}-{map}-{center}-{range}-{zoom}");
+            Trace.WriteLine($"Input: {world}-{map}-{Points}-{padding}-{Zoom}");
 
-            var path = output ?? $"{Tiles.Source.Title} ({world}-{map}-{center}-{range}-{zoom})";
-            path = Regex.Replace(path, @"\.\w{3,4}$", "", RegexOptions.IgnoreCase) + ".png";
+            var FilePath = output ?? $"{Source.Title} ({world}-{map}-{Points}-{padding}-{Zoom})";
+            FilePath = Regex.Replace(FilePath, @"\.\w{3,4}$", "", RegexOptions.IgnoreCase);
 
             var SW = new Stopwatch();
             SW.Start();
@@ -82,7 +85,7 @@ namespace DynmapImageExport.Commands
                 });
             var Image = AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
-                .Start("Saving image", ctx => Merger.Save(path));
+                .Start("Saving image", ctx => Merger.Save(FilePath, Format));
             SW.Stop();
             var TP = new TextPath(Image.FullName)
                 .LeafColor(Color.Yellow);

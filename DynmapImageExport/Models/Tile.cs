@@ -15,33 +15,13 @@
         public int Y { get; }
         public int Zoom { get; }
 
-        public TileMap CreateTileMap(Padding padding)
-        {
-            var Scale = 1 << Zoom;
+        public Tile Copy() => new(Source, X, Y, Zoom);
 
-            var Tiles = new TileMap(Source);
-
-            for (int dy = -padding.Top; dy <= padding.Bottom; dy++)
-            {
-                for (int dx = -padding.Left; dx <= padding.Right; dx++)
-                {
-                    if (dx == 0 && dy == 0)
-                    {
-                        Tiles[(dx, dy)] = this;
-                        continue;
-                    }
-                    var x = X + dx * Scale;
-                    var y = Y - dy * Scale;
-                    var tile = new Tile(Source, x, y, Zoom);
-                    Tiles[(dx, dy)] = tile;
-                }
-            }
-            return Tiles;
-        }
+        public Tile NewTile(int x, int y) => new(Source, x, y, Zoom);
 
         public string TilePath() => Source.TilePath(X, Y, Zoom);
 
-        public string TileURL() => Source.TileURL(X, Y, Zoom);
+        public string TileURI() => Source.TileURI(X, Y, Zoom);
 
         public override string ToString() => $"[{X},{Y}]";
     }

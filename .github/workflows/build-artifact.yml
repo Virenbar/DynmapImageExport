@@ -5,6 +5,7 @@ on:
     paths-ignore:
       - "**.md"
       - ".github/**"
+      - "assets/**"
   pull_request:
     branches: [master]
   workflow_call:
@@ -17,12 +18,11 @@ jobs:
     name: Build
     strategy:
       matrix:
-        configuration: [Debug, Release]
+        profile: [win, linux]
     runs-on: windows-latest
     env:
       DOTNET_NOLOGO: true
-      SolutionName: DynmapImageExport.sln
-      Configuration: ${{ matrix.configuration }}
+      PROFILE: ${{ matrix.profile }}
     outputs:
       version: ${{steps.version.outputs.version}}
     steps:
@@ -51,28 +51,15 @@ jobs:
       - name: Build solution
         run: |
           dotnet restore --locked-mode
-          dotnet build -c $env:Configuration
+          dotnet build -c Release
 
       - name: Build artifact
-        if: matrix.configuration == 'Release'
-        run: |
-          dotnet publish -c Release -p:PublishProfile=win-x64 /property:Version=$env:VERSION
-          dotnet publish -c Release -p:PublishProfile=linux-x64 /property:Version=$env:VERSION
+        run: dotnet publish -c Release -p:PublishProfile=$env:PROFILE /property:Version=$env:VERSION
 
-      - name: Upload artifact(win)
-        if: matrix.configuration == 'Release'
+      - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: DynmapImageExport(win)
+          name: DynmapImageExport(${{ matrix.profile }})
           path: |
-            DynmapImageExport\bin\Release\net6.0\publish\win-x64\DynmapImageExport.exe
-          if-no-files-found: error
-
-      - name: Upload artifact(linux)
-        if: matrix.configuration == 'Release'
-        uses: actions/upload-artifact@v3
-        with:
-          name: DynmapImageExport(linux)
-          path: |
-            DynmapImageExport\bin\Release\net6.0\publish\linux-x64\DynmapImageExport
+            DynmapImageExport\publish\${{ matrix.profile }}\**
           if-no-files-found: error

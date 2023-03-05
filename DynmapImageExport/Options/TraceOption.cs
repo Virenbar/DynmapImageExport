@@ -6,15 +6,15 @@ using System.Text;
 
 namespace DynmapImageExport.Options
 {
-    internal class Trace : Option<bool>
+    internal class TraceOption : Option<bool>
     {
         private static TraceListener TL;
 
-        public Trace() : base(new[] { "--trace", "-t" }, "Write trace log") { }
+        public TraceOption() : base(new[] { "--trace", "-t" }, "Write trace log") { }
 
         public static CommandLineBuilder AddToBuilder(CommandLineBuilder builder)
         {
-            var Trace = new Trace();
+            var Trace = new TraceOption();
             builder.Command.AddGlobalOption(Trace);
             builder.AddMiddleware((context, next) =>
             {

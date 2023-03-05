@@ -1,6 +1,6 @@
-# Dynmap Image Export [![Build artifact](https://img.shields.io/github/workflow/status/Virenbar/DynmapImageExport/Build%20Artifact?label=Build&logo=github)](https://github.com/Virenbar/DynmapImageExport/actions/workflows/build-artifact.yml)
+# Dynmap Image Export [![Build artifact](https://img.shields.io/github/actions/workflow/status/Virenbar/DynmapImageExport/build-artifact.yml?label=Build&logo=github)](https://github.com/Virenbar/DynmapImageExport/actions/workflows/build-artifact.yml)
 
-Command line tool that downloads tiles from Dynmap HTTP server and merges them into one image.
+CLI tool for downloading tiles from Dynmap HTTP server and merging them into one image.
 
 ![terminal](/assets/images/terminal.gif)
 
@@ -8,24 +8,25 @@ Command line tool that downloads tiles from Dynmap HTTP server and merges them i
 .\DynmapImageExport <command> <url> [arguments] [options]
 
 Commands:
-    a, about                                              Show info about application
-    list, ls <url>                                        Show available worlds and maps
-    i, info <url> <world> <map>                           Show info about map
-    m, merge <url> <world> <map> <center> <range> <zoom>  Merge dynmap to image [center: [0,100,0], range: [2] ]
+    a, about                              Show info about application
+    list, ls <url>                        Show available worlds and maps
+    i, info <url> <world> <map>           Show info about map
+    m, merge <url> <world> <map> <point>  Merge dynmap to image [default: [0,100,0]]
 
 Arguments:
-    <url>     Dynmap URL
-    <world>   World name
-    <map>     Map name
-    <center>  Center of image [x,y,z] [default: [0,64,0]]
-    <range>   Range of image in tiles [all]|[vert,horz]|[top,right,bottom,left] [default: [2]]
-    <zoom>    Zoom []
+    <url>    Dynmap URL
+    <world>  World name
+    <map>    Map name
+    <point>  Point of map [x,y,z] [default: [0,100,0]]
 
 Options:
-    -o, --output <output>  Output path
-    -nc, --no-cache        Ignore cached tiles
-    -t, --trace            Write trace log
-    -?, -h, --help         Show help and usage information
+    -p, --padding <padding>       Padding in tiles [all]|[vert,horz]|[top,right,bottom,left] [default: [2,2,2,2]]
+    -z, --zoom <zoom>             Zoom
+    -o, --output <output>         Output path
+    -f, --format <JPEG|PNG|WEBM>  Format
+    -nc, --no-cache               Ignore cached tiles
+    -t, --trace                   Write trace log
+    -?, -h, --help                Show help and usage information
 ```
 
 ## Installation
@@ -74,10 +75,10 @@ Options:
 3. Make a image
 
     ```text
-    > .\DynmapImageExport merge <url> <world> <map> <center> <range> <zoom>
+    > .\DynmapImageExport merge <url> <world> <map> [<point>...] [options]
 
     Example:
-    > .\DynmapImageExport m https://map.minecrafting.ru/ world flat [0,100,0] [6,6,5,5] 2
+    > .\DynmapImageExport m https://map.minecrafting.ru/ world flat [0,100,0] -p [6,6,5,5] -z 2
     ```
 
 Used arguments:
@@ -85,26 +86,37 @@ Used arguments:
 * `https://map.minecrafting.ru/` - Dynmap HTTP server
 * `world` - World name
 * `flat` - Map name
-* `[0,100,0]` - Minecraft coordinates of central tile of image.
-* `[6,6,5,5]` - Number of tiles in each direction from central tile. 6 to top, 6 to right, 5 to bottom, 5 to left.  
+* `[0,100,0]` - Minecraft coordinates of point.
+* `-p [6,6,5,5]` - Padding in tiles from points. 6 to top, 6 to right, 5 to bottom, 5 to left.  
     This will produce 12x12 tiles image(1536x1536 in pixels)
-* `2` - Zoom level. 1:1 scale in this example.
+* `-z 2` - Zoom level. 1:1 scale in this example.
 
 ### Notes
 
+* Executing without arguments will launch in interactive mode
 * Default zoom is 1:1 scale (i.e. 1 block to 1 pixel)
 * Size of 10Kpx X 10Kpx image ~= 150MB; 20Kpx X 20Kpx ~= 450MB
-* Range is number of tiles from center tile (i.e. padding)  
-  * `[2]` - 5x5 tiles image - 2 in each direction  
-  * `[2,3]` - 5x7 tiles image - 2 to top and bottom, 3 to right and left  
-  * `[2,3,2,2]` - 5x6 tiles image - 2 to top, 3 to right, 2 to bottom, 2 to left
 
-## Example
+## Points and Padding example
+
+You can provide any number of points. They will be combined into a region. Padding will be added to the resulting region.
+
+* `[2]` - 2 in each direction  
+* `[2,3]` - 2 to top and bottom, 3 to right and left  
+* `[2,3,2,2]` - 2 to top, 3 to right, 2 to bottom, 2 to left
+  
+One point with padding `[1,2,3,2]`  
+![1 point](./assets/images/Point-1.svg)  
+
+Three points with padding `[1]`  
+![3 points](./assets/images/Point-3.svg)
+
+## Image example
 
 ### Flat map
 
 ```console
-.\DynmapImageExport m https://map.minecrafting.ru/ world flat [0,100,0] [5,6,5,5] 2
+.\DynmapImageExport m https://map.minecrafting.ru/ world flat [0,100,0] -p [6,6,5,5] -z 2
 ```
 
 ![flat](/assets/images/Minecrafting.ru-flat.png)
@@ -112,7 +124,7 @@ Used arguments:
 ### Isometric map
 
 ```console
-.\DynmapImageExport m https://map.minecrafting.ru/ world se_view [0,100,0] [5,11,5,10]
+.\DynmapImageExport m https://map.minecrafting.ru/ world se_view [0,100,0] -p [5,11,5,10] -z 0
 ```
 
 ![se_view](/assets/images/Minecrafting.ru-se_view.png)

@@ -35,10 +35,36 @@ namespace DynmapImageExport
             Trace.WriteLine($"Merge done: {Result.Width}px X {Result.Height}px");
         }
 
-        public FileInfo Save(string path)
+        public FileInfo Save(string path, ImageFormat format)
         {
-            Result.SaveAsPng(path);
-            Trace.WriteLine($"Image saved: {path}");
+            var File = format switch
+            {
+                ImageFormat.PNG => SavePNG(path),
+                ImageFormat.JPG => SaveJPG(path),
+                ImageFormat.WEBP => SaveWEBP(path),
+                _ => throw new ArgumentException($"Invalid format: {format}", nameof(format))
+            };
+            Trace.WriteLine($"Image saved: {File.FullName}");
+            return File;
+        }
+
+        public FileInfo Save(string path) => Save(path, ImageFormat.PNG);
+
+        private FileInfo SaveJPG(string path)
+        {
+            Result.SaveAsJpeg(path + ".jpg");
+            return new FileInfo(path);
+        }
+
+        private FileInfo SavePNG(string path)
+        {
+            Result.SaveAsPng(path + ".png");
+            return new FileInfo(path);
+        }
+
+        private FileInfo SaveWEBP(string path)
+        {
+            Result.SaveAsWebp(path + ".webp");
             return new FileInfo(path);
         }
 
