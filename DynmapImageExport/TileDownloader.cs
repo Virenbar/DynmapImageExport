@@ -53,7 +53,7 @@ namespace DynmapImageExport
             try
             {
                 await Semaphore.WaitAsync();
-                var URL = tile.TilePath();
+                var URL = Tiles.Source.TilesURI + tile.TilePath();
                 Trace.WriteLine($"Downloading tile: {URL} ");
                 var Responce = await Client.GetAsync(URL);
                 if (!Responce.IsSuccessStatusCode)
