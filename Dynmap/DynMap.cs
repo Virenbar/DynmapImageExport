@@ -31,7 +31,7 @@ namespace Dynmap
             var URLFile = "standalone/config.js";
             Trace.WriteLine($"Fetching: {URLFile}");
             var URL_JS = await Client.GetStringAsync(URLFile);
-            var Match = Regex.Match(URL_JS, "url\\s*:\\s*(.+)};", RegexOptions.Singleline);
+            var Match = Regex.Match(URL_JS, @"url\s*:\s*(.+)};", RegexOptions.Singleline);
             URLs = JsonConvert.DeserializeObject<URL>(Match.Groups[1].Value);
 
             var ConfigFile = ApplyTimestamp(URLs.Configuration);

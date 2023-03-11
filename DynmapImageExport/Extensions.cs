@@ -40,7 +40,14 @@ namespace DynmapImageExport
 
         internal static string RemoveInvalidChars(this string str)
         {
-            return string.Join("_", str.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
+            return string.Join("", str.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
+        }
+
+        internal static string ReplaceInvalidChars(this string str) => ReplaceInvalidChars(str, "_");
+
+        internal static string ReplaceInvalidChars(this string str, string replacment)
+        {
+            return string.Join(replacment, str.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
         }
 
         internal static CommandLineBuilder UseTrace(this CommandLineBuilder builder) => TraceOption.AddToBuilder(builder);

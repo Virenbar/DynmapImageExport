@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿using DynmapImageExport.Models;
+using System.Diagnostics;
 using System.Net;
-using DynmapImageExport.Models;
 
 namespace DynmapImageExport
 {
@@ -27,7 +27,8 @@ namespace DynmapImageExport
         public async Task<ImageMap> Download(IProgress<int> IP = default)
         {
             Trace.WriteLine($"Download started: {Tiles.Count} tiles");
-            using (Client = new() { BaseAddress = Tiles.Source.TilesURI })
+            // TilesURI can have URLSearchParams so BaseAddress doesn't work
+            using (Client = new())
             {
                 Files.Clear();
                 var Tasks = Tiles.Select(async (KV) =>
@@ -53,7 +54,7 @@ namespace DynmapImageExport
             try
             {
                 await Semaphore.WaitAsync();
-                var URL = Tiles.Source.TilesURI + tile.TilePath();
+                var URL = tile.TileURI();
                 Trace.WriteLine($"Downloading tile: {URL} ");
                 var Responce = await Client.GetAsync(URL);
                 if (!Responce.IsSuccessStatusCode)
