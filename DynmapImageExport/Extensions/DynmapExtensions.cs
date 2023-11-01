@@ -1,11 +1,9 @@
-﻿using Dynmap.Models;
-using Dynmap;
-using DynmapImageExport.Options;
-using System.CommandLine.Builder;
+﻿using Dynmap;
+using Dynmap.Models;
 
-namespace DynmapImageExport
+namespace DynmapImageExport.Extensions
 {
-    public static class Extensions
+    internal static class DynmapExtensions
     {
         internal static Map GetMap(this World world, string map)
         {
@@ -38,28 +36,10 @@ namespace DynmapImageExport
             return World;
         }
 
-        internal static string RemoveInvalidChars(this string str)
-        {
-            return string.Join("", str.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
-        }
-
-        internal static string ReplaceInvalidChars(this string str) => ReplaceInvalidChars(str, "_");
-
-        internal static string ReplaceInvalidChars(this string str, string replacment)
-        {
-            return string.Join(replacment, str.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
-        }
-
-        internal static CommandLineBuilder UseTrace(this CommandLineBuilder builder) => TraceOption.AddToBuilder(builder);
-
-        #region Map
-
         internal static string ScaleToString(this Map _, double scale) => scale >= 1 ? $"{scale}:1" : $"1:{1 / scale}";
 
         internal static double ZoomToScale(this Map map, int zoom) => map.Scale / Math.Pow(2, zoom);
 
         internal static string ZoomToString(this Map map, int zoom) => map.ScaleToString(map.ZoomToScale(zoom));
-
-        #endregion Map
     }
 }

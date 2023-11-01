@@ -17,7 +17,7 @@ namespace DynmapImageExport.Commands
         private async Task<int> HandleCommand(Uri URL)
         {
             AnsiConsole.MarkupLine($"[yellow]List for: {URL.Host}[/]");
-            var Dynmap = await Common.GetDynmap(URL);
+            using var Dynmap = await Common.GetDynmap(URL);
             var Worlds = Dynmap.Config.Worlds;
             var MapNameMax = Worlds.SelectMany(W => W.Maps).Max(M => M.Name.Length);
 
