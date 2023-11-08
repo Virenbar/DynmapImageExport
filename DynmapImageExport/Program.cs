@@ -1,9 +1,9 @@
 ﻿using DynmapImageExport.Commands;
+using DynmapImageExport.Extensions;
 using Spectre.Console;
 using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace DynmapImageExport

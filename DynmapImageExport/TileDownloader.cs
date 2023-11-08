@@ -6,11 +6,11 @@ namespace DynmapImageExport
 {
     internal class TileDownloader : IDisposable
     {
+        private readonly HttpClient Client = new();
         private readonly ImageMap Files = new();
         private readonly SemaphoreSlim Semaphore;
         private readonly TileMap Tiles;
         private readonly string Title;
-        private HttpClient Client;
 
         public TileDownloader(TileMap tiles) : this(tiles, 4) { }
 
@@ -28,35 +28,33 @@ namespace DynmapImageExport
         {
             Trace.WriteLine($"Download started: {Tiles.Count} tiles");
             // TilesURI can have URLSearchParams so BaseAddress doesn't work
-            using (Client = new())
+
+            Files.Clear();
+            var Tasks = Tiles.Select(async (KV) =>
             {
-                Files.Clear();
-                var Tasks = Tiles.Select(async (KV) =>
-                {
-                    var (DXY, Tile) = KV;
-                    if (await TryDownloadTile(Tile) is string path) { Files[DXY] = path; }
-                    IP.Report(1);
-                });
-                await Task.WhenAll(Tasks);
-            }
+                var (DXY, Tile) = KV;
+                if (await TryDownloadTile(Tile) is string path) { Files[DXY] = path; }
+                IP.Report(1);
+            });
+            await Task.WhenAll(Tasks);
+
             Trace.WriteLine($"Download done: {Files.Count} tiles");
             return Files;
         }
 
         private async Task<string> TryDownloadTile(Tile tile)
         {
-            var LocalFile = new FileInfo(Path.Combine("tiles", Title, tile.TilePath()));
+            var LocalFile = new FileInfo(Path.Combine("tiles", Title, tile.TilePath));
             if (UseCache && LocalFile.Exists)
             {
-                Trace.WriteLine($"Cached tile: {tile.TilePath()} ");
+                Trace.WriteLine($"Cached tile: {tile.TilePath} ");
                 return LocalFile.FullName;
             }
             try
             {
                 await Semaphore.WaitAsync();
-                var URL = tile.TileURI();
-                Trace.WriteLine($"Downloading tile: {URL} ");
-                var Responce = await Client.GetAsync(URL);
+                Trace.WriteLine($"Downloading tile: {tile.TileURI} ");
+                using var Responce = await Client.GetAsync(tile.TileURI, HttpCompletionOption.ResponseHeadersRead);
                 if (!Responce.IsSuccessStatusCode)
                 {
                     Trace.WriteLine($"Tile: {tile} - {Responce.StatusCode}({Responce.ReasonPhrase})");
@@ -65,7 +63,8 @@ namespace DynmapImageExport
 
                 Directory.CreateDirectory(LocalFile.DirectoryName);
                 using var FS = new FileStream(LocalFile.FullName, FileMode.Create);
-                await Responce.Content.CopyToAsync(FS);
+                using var RS = await Responce.Content.ReadAsStreamAsync();
+                await RS.CopyToAsync(FS);
 
                 return LocalFile.FullName;
             }

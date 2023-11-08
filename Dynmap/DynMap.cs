@@ -5,8 +5,9 @@ using System.Text.RegularExpressions;
 
 namespace Dynmap
 {
-    public class DynMap
+    public class DynMap : IDisposable
     {
+        private readonly HttpClient Client;
         private readonly Uri URL;
         private URL URLs;
 
@@ -15,6 +16,7 @@ namespace Dynmap
         public DynMap(Uri url)
         {
             URL = url;
+            Client = new HttpClient { BaseAddress = URL };
             Trace.WriteLine($"Dynmap URL: {URL}");
         }
 
@@ -26,11 +28,9 @@ namespace Dynmap
 
         public async Task RefreshConfig()
         {
-            using var Client = new HttpClient { BaseAddress = URL };
-
-            var URLFile = "standalone/config.js";
-            Trace.WriteLine($"Fetching: {URLFile}");
-            var URL_JS = await Client.GetStringAsync(URLFile);
+            var configURL = "standalone/config.js";
+            Trace.WriteLine($"Fetching: {configURL}");
+            var URL_JS = await Client.GetStringAsync(configURL);
             var Match = Regex.Match(URL_JS, @"url\s*:\s*(.+)};", RegexOptions.Singleline);
             URLs = JsonConvert.DeserializeObject<URL>(Match.Groups[1].Value);
 
@@ -46,5 +46,11 @@ namespace Dynmap
         }
 
         private static string ApplyTimestamp(string str) => str.Replace("{timestamp}", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString());
+
+        #region Disposable
+
+        public void Dispose() => ((IDisposable)Client).Dispose();
+
+        #endregion Disposable
     }
 }

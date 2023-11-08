@@ -1,5 +1,6 @@
 ﻿using Dynmap;
 using Dynmap.Models;
+using DynmapImageExport.Extensions;
 
 namespace DynmapImageExport.Models
 {
@@ -59,7 +60,7 @@ namespace DynmapImageExport.Models
 
             // Scale = (int)Math.Pow(2, zoom);
             var ZoomScale = 1 << zoom;
-            var dimension = 128; //Can be different?
+            var dimension = 128; // Can be different?
 
             // IDK How it works, but "it just works"
             // (Math.Ceiling((lng / dimension) / Z0) - 1) * Z0
