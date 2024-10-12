@@ -2,12 +2,15 @@
 
 namespace DynmapImageExport.Models
 {
+    /// <summary>
+    /// Dictionary of URLs to tiles
+    /// </summary>
     internal class ImageMap : ConcurrentDictionary<(int DX, int DY), string>
     {
-        public int MaxDX => Keys.Max(K => K.DX);
-        public int MaxDY => Keys.Max(K => K.DY);
-        public int MinDX => Keys.Min(K => K.DX);
-        public int MinDY => Keys.Min(K => K.DY);
+        private int MaxDX => Keys.Max(K => K.DX);
+        private int MaxDY => Keys.Max(K => K.DY);
+        private int MinDX => Keys.Min(K => K.DX);
+        private int MinDY => Keys.Min(K => K.DY);
 
         #region W H
         public int Height => MaxDY - MinDY + 1;
@@ -18,12 +21,14 @@ namespace DynmapImageExport.Models
         /// Shift all deltas so they start from zero
         /// </summary>
         /// <returns>New ImageMap with normalized deltas</returns>
-        public ImageMap Normilize()
+        public ImageMap Normalize()
         {
+            var minDX = MinDX;
+            var minDY = MinDY;
             ImageMap Normal = new();
             foreach (var (K, V) in this)
             {
-                var Key = (K.DX - MinDX, K.DY - MinDY);
+                var Key = (K.DX - minDX, K.DY - minDY);
                 Normal[Key] = V;
             }
             return Normal;

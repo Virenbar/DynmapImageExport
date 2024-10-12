@@ -13,6 +13,13 @@ namespace DynmapImageExport.Models
             Map = map;
         }
 
+        internal TileSource(DynMap dynmap, string world, string map)
+        {
+            DynMap = dynmap;
+            World = DynMap.GetWorld(world);
+            Map = World.GetMap(map);
+        }
+
         #region Dynmap
         public DynMap DynMap { get; }
         public Map Map { get; }
@@ -85,6 +92,11 @@ namespace DynmapImageExport.Models
 
         public string TileURI(int X, int Y, int zoom) => $"{TilesURI}{TilePath(X, Y, zoom)}";
 
+        /// <summary>
+        /// Checks if map supports provided zoom
+        /// </summary>
+        /// <param name="zoom">Zoom to check</param>
+        /// <exception cref="ArgumentException"></exception>
         public void ValidateZoom(int? zoom)
         {
             if (zoom is null) { return; }

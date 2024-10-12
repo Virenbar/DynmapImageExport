@@ -1,6 +1,5 @@
 ﻿using Spectre.Console;
 using System.CommandLine.Invocation;
-using System.CommandLine.IO;
 
 namespace DynmapImageExport
 {

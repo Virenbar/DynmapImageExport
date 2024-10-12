@@ -1,4 +1,4 @@
-# Dynmap Image Export [![Build artifact](https://img.shields.io/github/actions/workflow/status/Virenbar/DynmapImageExport/build-artifact.yml?label=Build&logo=github)](https://github.com/Virenbar/DynmapImageExport/actions/workflows/build-artifact.yml)
+# Dynmap Image Export [![Build artifact][build-src]][build-href]
 
 CLI tool for downloading tiles from Dynmap HTTP server and merging them into one image.
 
@@ -25,6 +25,7 @@ Options:
     -o, --output <output>         Output path
     -f, --format <JPEG|PNG|WEBM>  Format
     -nc, --no-cache               Ignore cached tiles
+    -t, --threads <threads>       Number of threads
     -t, --trace                   Write trace log
     -?, -h, --help                Show help and usage information
 ```
@@ -128,3 +129,7 @@ Three points with padding `[1]`
 ```
 
 ![se_view](/assets/images/Minecrafting.ru-se_view.png)
+
+<!-- Badges -->
+[build-src]: https://img.shields.io/github/actions/workflow/status/Virenbar/DynmapImageExport/build-artifact.yml?label=Build&logo=github
+[build-href]: https://github.com/Virenbar/DynmapImageExport/actions/workflows/build-artifact.yml

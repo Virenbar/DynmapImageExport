@@ -6,16 +6,20 @@ namespace DynmapImageExport
 {
     internal class TileDownloader : IDisposable
     {
-        private readonly HttpClient Client = new();
+        private readonly HttpClient Client;
         private readonly ImageMap Files = new();
         private readonly SemaphoreSlim Semaphore;
         private readonly TileMap Tiles;
         private readonly string Title;
 
-        public TileDownloader(TileMap tiles) : this(tiles, 4) { }
-
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="tiles">Tiles to download</param>
+        /// <param name="threads">Number of threads</param>
         public TileDownloader(TileMap tiles, int threads)
         {
+            Client = new HttpClient(new HttpClientHandler { MaxConnectionsPerServer = threads });
             Tiles = tiles;
             Title = Tiles.Source.Title;
             Semaphore = new(threads);
@@ -24,6 +28,11 @@ namespace DynmapImageExport
 
         public bool UseCache { get; set; } = true;
 
+        /// <summary>
+        /// Downloads tiles to local storage and returns <see cref="ImageMap"/>
+        /// </summary>
+        /// <param name="IP"></param>
+        /// <returns></returns>
         public async Task<ImageMap> Download(IProgress<int> IP = default)
         {
             Trace.WriteLine($"Download started: {Tiles.Count} tiles");

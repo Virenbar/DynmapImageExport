@@ -38,6 +38,7 @@ namespace DynmapImageExport.Commands
             AddOption(new OutputOption());
             AddOption(new FormatOption());
             AddOption(new NoCacheOption());
+            AddOption(new ThreadsOption());
 
             Handler = CommandHandler.Create(HandleCommand);
         }
@@ -51,13 +52,12 @@ namespace DynmapImageExport.Commands
             int? zoom,
             string output,
             ImageFormat? format,
-            bool noCache)
+            bool noCache,
+            int? threads)
         {
             AnsiConsole.MarkupLine($"[yellow]Merging of: {URL.Host} - {world} - {map}[/]");
             using var Dynmap = await Common.GetDynmap(URL);
-            var World = Dynmap.GetWorld(world);
-            var Map = World.GetMap(map);
-            var Source = new TileSource(Dynmap, World, Map);
+            var Source = new TileSource(Dynmap, world, map);
             Source.ValidateZoom(zoom);
             var Zoom = zoom ?? Source.ScaleToZoom(1);
             var Format = format ?? Source.ImageFormat;
@@ -81,29 +81,25 @@ namespace DynmapImageExport.Commands
 
             SW.Restart();
 
-            var (Images, Merger) = await AnsiConsole.Progress()
+            var (Images, Image) = await AnsiConsole.Progress()
                  .Columns(Columns)
                  .StartAsync(async ctx =>
                  {
                      var T = ctx.AddTask($"Downloading tiles: 0/{Tiles.Count}", true, Tiles.Count);
-                     var T2 = ctx.AddTask($"Merging tiles: 0/0", false);
-                     T2.IsIndeterminate = true;
-
-                     using var TD = new TileDownloader(Tiles, 8) { UseCache = !noCache };
+                     using var TD = new TileDownloader(Tiles, threads ?? 4) { UseCache = !noCache };
                      var Images = await TD.Download(T.AsProgress());
 
-                     T2.MaxValue = Images.Count;
-                     T2.IsIndeterminate = false;
-                     T2.StartTask();
-                     var TM = new TileMerger(Images);
+                     var T2 = ctx.AddTask($"Merging tiles: 0/{Images.Count}", true, Images.Count);
+                     using var TM = new TileMerger(Images);
                      TM.Merge(T2.AsProgress());
-                     return (Images, TM);
-                 });
 
-            var Image = AnsiConsole.Status()
-                .Spinner(Spinner.Known.Dots)
-                .Start("Saving image", ctx => Merger.Save(FilePath, Format));
-            Merger.Dispose();
+                     var T3 = ctx.AddTask("Saving image", true, 1);
+                     T3.IsIndeterminate = true;
+                     var Image = TM.Save(FilePath, Format);
+                     T3.Increment(1);
+
+                     return (Images, Image);
+                 });
 
             SW.Stop();
             Size = $"{Images.Height} X {Images.Width}({Images.Height * 128}px X {Images.Width * 128}px)";

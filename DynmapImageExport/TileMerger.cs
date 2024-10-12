@@ -22,13 +22,13 @@ namespace DynmapImageExport
         public void Merge(IProgress<int> IP)
         {
             Trace.WriteLine($"Merge started: {Images.Count} images");
-            var NImages = Images.Normilize();
+            var NImages = Images.Normalize();
             foreach (var (K, V) in NImages)
             {
-                Result.Mutate(O =>
+                Result.Mutate(ctx =>
                 {
                     using var Tile = Image.Load(V);
-                    O.DrawImage(Tile, new Point(K.DX * Size, K.DY * Size), 1);
+                    ctx.DrawImage(Tile, new Point(K.DX * Size, K.DY * Size), 1);
                     IP.Report(1);
                 });
             }
