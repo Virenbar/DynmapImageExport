@@ -23,7 +23,7 @@ Options:
     -p, --padding <padding>       Padding in tiles [all]|[vert,horz]|[top,right,bottom,left] [default: [2,2,2,2]]
     -z, --zoom <zoom>             Zoom
     -o, --output <output>         Output path
-    -f, --format <JPEG|PNG|WEBM>  Format
+    -f, --format <JPEG|PNG|WEBP>  Format
     -nc, --no-cache               Ignore cached tiles
     -t, --threads <threads>       Number of threads
     -t, --trace                   Write trace log
