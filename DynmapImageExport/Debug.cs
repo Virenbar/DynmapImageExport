@@ -10,12 +10,6 @@
             //Program.Invoke("ls https://ebs.virenbar.ru/dynmap/");
             //Program.Invoke("i https://ebs.virenbar.ru/dynmap/ ebs surface");
             //Program.Invoke("m https://ebs.virenbar.ru/dynmap/ ebs surface");
-            // EarthMC (Strange config; Tiles & Markers use URLSearchParams)
-            // https://earthmc.net/map/nova/standalone/config.js
-            //Program.Invoke("ls https://earthmc.net/map/nova/");
-            //Program.Invoke("i https://earthmc.net/map/nova/ earth flat");
-            //Program.Invoke("m https://earthmc.net/map/nova/ earth flat");
-            //Program.Invoke("m https://earthmc.net/map/nova/ earth flat -p [6] -z 3");
             // Minecrafting.ru (Uses standalone web-server)
             // https://map.minecrafting.ru/standalone/config.js
             //Program.Invoke("a");
