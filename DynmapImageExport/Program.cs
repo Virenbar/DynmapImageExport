@@ -4,13 +4,11 @@ using Spectre.Console;
 using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
-using System.Text.RegularExpressions;
 
 namespace DynmapImageExport
 {
     public static class Program
     {
-        private static readonly Regex Brackets = new(@"\s+(?=[^[\]]*\])");
         private static readonly Parser Parser;
 
         static Program()
@@ -33,12 +31,16 @@ namespace DynmapImageExport
                .Build();
         }
 
-        internal static int Invoke(string[] args) => Invoke(string.Join(' ', args));
+        internal static int Invoke(string[] args)
+        {
+            args = args.FixBrackets();
+            return Parser.Invoke(args);
+        }
 
         internal static int Invoke(string args)
         {
-            args = args.Replace("DynmapImageExport", "");
-            args = Brackets.Replace(args, "");
+            args = args.RemoveName();
+            args = args.FixBrackets();
             return Parser.Invoke(args);
         }
 
@@ -53,14 +55,13 @@ namespace DynmapImageExport
             }
             else
             {
-                Invoke("-h");
+                Parser.Invoke("-h");
                 while (true)
                 {
                     AnsiConsole.MarkupLine("[green]Input command:[/]");
                     var Input = AnsiConsole.Prompt(new TextPrompt<string>("[green]>[/]"));
-                    Input = Input.Replace("DynmapImageExport", "");
                     AnsiConsole.WriteLine();
-                    Parser.Invoke(Input);
+                    Invoke(Input);
                 }
             }
         }
