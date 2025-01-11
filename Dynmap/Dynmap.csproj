@@ -1,19 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<DebugType>embedded</DebugType>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		<RepositoryType>git</RepositoryType>
-		<RepositoryUrl>https://github.com/Virenbar/DynmapTools</RepositoryUrl>
+		<RepositoryUrl>https://github.com/Virenbar/DynmapImageExport</RepositoryUrl>
 	</PropertyGroup>
-	
+
 	<PropertyGroup>
 		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 		<IsPublishable>False</IsPublishable>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
