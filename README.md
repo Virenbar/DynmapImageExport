@@ -11,13 +11,13 @@ Commands:
     a, about                              Show info about application
     list, ls <url>                        Show available worlds and maps
     i, info <url> <world> <map>           Show info about map
-    m, merge <url> <world> <map> <point>  Merge dynmap to image [default: [0,100,0]]
+    m, merge <url> <world> <map> <point>  Merge dynmap to image
 
 Arguments:
     <url>    Dynmap URL
     <world>  World name
     <map>    Map name
-    <point>  Point of map [x,y,z] [default: [0,100,0]]
+    <point>  Point of map [x,y,z] [default: <center of world>]
 
 Options:
     -p, --padding <padding>       Padding in tiles [all]|[vert,horz]|[top,right,bottom,left] [default: [2,2,2,2]]
@@ -32,7 +32,7 @@ Options:
 
 ## Installation
 
-* Install [.NET 6.x](https://dotnet.microsoft.com/download)
+* Install [.NET](https://dotnet.microsoft.com/download)
 * Download [latest release](https://github.com/Virenbar/DynmapImageExport/releases)
 
 ## Usage
@@ -73,7 +73,7 @@ Options:
     └── 6 - 1:16
     ```
 
-3. Make a image
+3. Create an image
 
     ```text
     > .\DynmapImageExport merge <url> <world> <map> [<point>...] [options]
@@ -95,6 +95,7 @@ Used arguments:
 ### Notes
 
 * Executing without arguments will launch in interactive mode
+* Default point is center of world
 * Default zoom is 1:1 scale (i.e. 1 block to 1 pixel)
 * Size of 10Kpx X 10Kpx image ~= 150MB; 20Kpx X 20Kpx ~= 450MB
 
@@ -105,7 +106,7 @@ You can provide any number of points. They will be combined into a region. Paddi
 * `[2]` - 2 in each direction  
 * `[2,3]` - 2 to top and bottom, 3 to right and left  
 * `[2,3,2,2]` - 2 to top, 3 to right, 2 to bottom, 2 to left
-  
+
 One point with padding `[1,2,3,2]`  
 ![1 point](./assets/images/Point-1.svg)  
 
@@ -116,16 +117,16 @@ Three points with padding `[1]`
 
 ### Flat map
 
-```console
-.\DynmapImageExport m https://map.minecrafting.ru/ world flat [0,100,0] -p [6,6,5,5] -z 2
+```sh
+.\DynmapImageExport m https://map.minecrafting.ru/ world flat -p [5,5,5,5] -z 2
 ```
 
 ![flat](/assets/images/Minecrafting.ru-flat.png)
 
 ### Isometric map
 
-```console
-.\DynmapImageExport m https://map.minecrafting.ru/ world se_view [0,100,0] -p [5,11,5,10] -z 0
+```sh
+.\DynmapImageExport m https://map.minecrafting.ru/ world se_view -p [5,11,5,10] -z 0
 ```
 
 ![se_view](/assets/images/Minecrafting.ru-se_view.png)
