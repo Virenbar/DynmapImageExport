@@ -20,7 +20,7 @@ namespace Dynmap.Models
         public bool Protected { get; set; }
 
         [JsonProperty("sealevel")]
-        public int Sealevel { get; set; }
+        public int SeaLevel { get; set; }
 
         [JsonProperty("title")]
         public string Title { get; set; }

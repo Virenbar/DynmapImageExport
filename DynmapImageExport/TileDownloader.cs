@@ -7,7 +7,6 @@ namespace DynmapImageExport
     internal class TileDownloader : IDisposable
     {
         private readonly HttpClient Client;
-        private readonly ImageMap Files = new();
         private readonly SemaphoreSlim Semaphore;
         private readonly TileMap Tiles;
         private readonly string Title;
@@ -19,6 +18,7 @@ namespace DynmapImageExport
         /// <param name="threads">Number of threads</param>
         public TileDownloader(TileMap tiles, int threads)
         {
+            // TilesURI can have URLSearchParams so BaseAddress doesn't work
             Client = new HttpClient(new HttpClientHandler { MaxConnectionsPerServer = threads });
             Tiles = tiles;
             Title = Tiles.Source.Title;
@@ -36,9 +36,8 @@ namespace DynmapImageExport
         public async Task<ImageMap> Download(IProgress<int> IP = default)
         {
             Trace.WriteLine($"Download started: {Tiles.Count} tiles");
-            // TilesURI can have URLSearchParams so BaseAddress doesn't work
-
-            Files.Clear();
+            var tileSize = 128 << Tiles.Source.Map.TileScale;
+            ImageMap Files = new(tileSize);
             var Tasks = Tiles.Select(async (KV) =>
             {
                 var (DXY, Tile) = KV;

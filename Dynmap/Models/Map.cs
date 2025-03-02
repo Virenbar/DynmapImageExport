@@ -67,6 +67,9 @@ namespace Dynmap.Models
         [JsonProperty("shader")]
         public string Shader { get; set; }
 
+        [JsonProperty("tilescale")]
+        public int TileScale { get; set; }
+
         [JsonProperty("title")]
         public string Title { get; set; }
 

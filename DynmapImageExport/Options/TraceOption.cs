@@ -2,7 +2,6 @@
 using System.CommandLine;
 using System.CommandLine.Builder;
 using System.Diagnostics;
-using System.Text;
 
 namespace DynmapImageExport.Options
 {

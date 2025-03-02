@@ -1,10 +1,22 @@
 ﻿using Dynmap;
 using Dynmap.Models;
+using DynmapImageExport.Models;
 
 namespace DynmapImageExport.Extensions
 {
     internal static class DynmapExtensions
     {
+        internal static ImageFormat GetImageFormat(this Map map)
+        {
+            return map.ImageFormat?.ToLowerInvariant() switch
+            {
+                "png" => ImageFormat.PNG,
+                "jpg" => ImageFormat.JPG,
+                "webp" => ImageFormat.WEBP,
+                _ => ImageFormat.PNG
+            };
+        }
+
         internal static Map GetMap(this World world, string map)
         {
             var Map = world.Maps.Find(M => M.Name.ToLowerInvariant() == map.ToLowerInvariant());
@@ -36,10 +48,14 @@ namespace DynmapImageExport.Extensions
             return World;
         }
 
-        internal static string ScaleToString(this Map _, double scale) => scale >= 1 ? $"{scale}:1" : $"1:{1 / scale}";
+        internal static int ScaleToZoom(this Map map, double scale) => (int)Math.Log(map.Scale / scale, 2);
+
+        internal static Models.Point ToPoint(this Dynmap.Models.Point point) => new((int)point.X, (int)point.Y, (int)point.Z);
 
         internal static double ZoomToScale(this Map map, int zoom) => map.Scale / Math.Pow(2, zoom);
 
-        internal static string ZoomToString(this Map map, int zoom) => map.ScaleToString(map.ZoomToScale(zoom));
+        internal static string ZoomToString(this Map map, int zoom) => ScaleToString(map.ZoomToScale(zoom));
+
+        private static string ScaleToString(double scale) => scale >= 1 ? $"{scale}:1" : $"1:{1 / scale}";
     }
 }

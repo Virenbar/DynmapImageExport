@@ -9,7 +9,7 @@
     },
     "Test Arguments": {
       "commandName": "Project",
-      "commandLineArgs": "m https://map.minecrafting.ru \"world no\" flat [ -110, 100, 110] [110,100, -110] -p [5]"
+      "commandLineArgs": "m https://map.minecrafting.ru world flat"
     }
   }
 }

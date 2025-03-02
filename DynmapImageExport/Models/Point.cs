@@ -9,6 +9,7 @@ namespace DynmapImageExport.Models
     internal record Point(int X, int Y, int Z)
     {
         private static readonly Regex R = new(@"-?\d+");
+
         public static Point Parse(string point)
         {
             var Match = R.Matches(point);

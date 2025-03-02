@@ -9,12 +9,13 @@ namespace DynmapImageExport
 {
     internal class TileMerger : IDisposable
     {
-        private const byte Size = 128;
         private readonly ImageMap Images;
         private readonly Image Result;
+        private readonly int Size;
 
         public TileMerger(ImageMap images)
         {
+            Size = images.TileSize;
             Result = new Image<Rgba32>(Size * images.Width, Size * images.Height);
             Images = images;
         }

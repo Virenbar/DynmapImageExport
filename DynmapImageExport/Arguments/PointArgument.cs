@@ -18,7 +18,7 @@ namespace DynmapImageExport.Arguments
 
         private static Point[] Parce(ArgumentResult result)
         {
-            if (result.Tokens.Count == 0) { return new[] { new Point(0, 100, 0) }; }
+            if (result.Tokens.Count == 0) { return null; }
             try
             {
                 return result.Tokens.Select(t => Point.Parse(t.Value)).ToArray();

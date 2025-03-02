@@ -59,13 +59,14 @@ namespace DynmapImageExport.Commands
             using var Dynmap = await Common.GetDynmap(URL);
             var Source = new TileSource(Dynmap, world, map);
             Source.ValidateZoom(zoom);
-            var Zoom = zoom ?? Source.ScaleToZoom(1);
-            var Format = format ?? Source.ImageFormat;
+            var Point = point ?? new[] { Source.World.Center.ToPoint() };
+            var Zoom = zoom ?? Source.Map.ScaleToZoom(1);
+            var Format = format ?? Source.Map.GetImageFormat();
 
-            var PointTiles = point.Select(P => Source.PointToTile(P, Zoom)).ToList();
+            var PointTiles = Point.Select(P => Source.PointToTile(P, Zoom)).ToList();
             var Tiles = TileMap.CreateTileMap(PointTiles, padding);
 
-            var Points = string.Join("~", point.Select(P => $"{P}"));
+            var Points = string.Join("~", Point.Select(P => $"{P}"));
             var Size = $"~{Tiles.Height} X ~{Tiles.Width}(~{Tiles.Height * 128}px X ~{Tiles.Width * 128}px)";
             var Info = new Grid()
                 .AddColumns(2)
@@ -80,7 +81,6 @@ namespace DynmapImageExport.Commands
             FilePath = Regex.Replace(FilePath, @"\.\w{3,4}$", "", RegexOptions.IgnoreCase);
 
             SW.Restart();
-
             var (Images, Image) = await AnsiConsole.Progress()
                  .Columns(Columns)
                  .StartAsync(async ctx =>
